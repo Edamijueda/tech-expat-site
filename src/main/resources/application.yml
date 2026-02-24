@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: TechExpat Site
+  autoconfigure:
+    exclude: org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
+
+info:
+  app:
+    name: TechExpat Site
+    description: Agency portfolio and client portal
+    version: 1.0.0
+
+management:
+  info:
+    env:
+      enabled: true
