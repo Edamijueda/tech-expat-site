@@ -8,15 +8,15 @@
     <title layout:title-pattern="$CONTENT_TITLE - TechExpat">TechExpat</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
     <header>
-        <nav>
+        <!-- <nav>
             <a th:href="@{/}">Home</a>
-        </nav>
+        </nav> -->
     </header>
 
-    <main layout:fragment="content">
+    <main layout:fragment="content" class="flex-grow-1 d-flex flex-column">
         <!-- Page content goes here -->
     </main>
 
@@ -25,5 +25,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <th:block layout:fragment="scripts"></th:block>
 </body>
 </html>

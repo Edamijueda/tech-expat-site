@@ -11,4 +11,9 @@ public class HomeController {
         return "index";
     }
 
+    @GetMapping("/builder")
+    public String builder() {
+        return "builder";
+    }
+
 }
