@@ -4,16 +4,16 @@
       layout:decorate="~{layout/layout}"
       lang="en">
 <head>
-    <title>Visionary</title>
+    <title>Builder</title>
     <link rel="stylesheet" th:href="@{/css/service-grid.css}">
 </head>
 <body>
 
 <main layout:fragment="content">
 
-    <!-- Toggle: View as Builder -->
+    <!-- Toggle: View as Visionary -->
     <div class="d-flex justify-content-end p-3">
-        <a th:href="@{/builder}" class="btn btn-outline-dark fw-bold">View as Builder</a>
+        <a th:href="@{/}" class="btn btn-outline-dark fw-bold">View as Visionary</a>
     </div>
 
     <!-- Service grid — centered vertically and horizontally -->
@@ -23,27 +23,27 @@
 
                 <div th:replace="~{fragments/service-button :: serviceButton(
                     'IT Consulting',
-                    'Get expert guidance to shape your tech idea into a clear strategy')}"></div>
+                    'Architecture reviews, technical audits, and engineering strategy')}"></div>
 
                 <div th:replace="~{fragments/service-button :: serviceButton(
                     'Maintain',
-                    'Keep your product running reliably with ongoing professional support')}"></div>
+                    'Collaborative code ownership, refactoring, and system reliability')}"></div>
 
                 <div th:replace="~{fragments/service-button :: serviceButton(
                     'Build',
-                    'We build your complete vision — from concept to working product')}"></div>
+                    'Partner with senior engineers on ambitious technical challenges')}"></div>
 
                 <div th:replace="~{fragments/service-button :: serviceButton(
                     'Learn',
-                    'Understand your tech so you can lead your project with confidence')}"></div>
+                    'Advanced workshops, code reviews, and peer-driven skill growth')}"></div>
 
                 <div th:replace="~{fragments/service-button :: serviceButton(
                     'Design',
-                    'Create beautiful, intuitive interfaces your users will love')}"></div>
+                    'Technical design systems, APIs, and component architecture')}"></div>
 
                 <div th:replace="~{fragments/service-button :: serviceButton(
-                    'Team',
-                    'Work with a dedicated team of experts who bring your vision to life')}"></div>
+                    'Security',
+                    'Harden your systems with expert audits, penetration testing, and security best practices')}"></div>
 
             </div>
         </div>

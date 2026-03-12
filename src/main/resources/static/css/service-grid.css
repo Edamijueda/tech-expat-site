@@ -1,0 +1,54 @@
+/* ============================================================
+   Service grid — button reveal styles
+   Desktop : reveal on :hover and :focus-visible (CSS only)
+   Mobile  : reveal on long press via .is-revealed class (JS)
+   ============================================================ */
+
+.service-btn {
+    min-height: 110px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Description overlay — hidden by default */
+.service-btn__desc {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+}
+
+.service-btn__label {
+    transition: opacity 0.18s ease;
+}
+
+/* ── Desktop: hover and keyboard focus ───────────────────── */
+@media (hover: hover) and (pointer: fine) {
+
+    .service-btn:hover .service-btn__desc,
+    .service-btn:focus-visible .service-btn__desc {
+        opacity: 1;
+        pointer-events: none; /* description is read-only; link click still works */
+    }
+
+    .service-btn:hover .service-btn__label,
+    .service-btn:focus-visible .service-btn__label {
+        opacity: 0;
+    }
+
+    /* Keep Bootstrap's focus ring visible even when description is shown */
+    .service-btn:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+}
+
+/* ── Mobile: long-press toggle via JS ────────────────────── */
+.service-btn.is-revealed .service-btn__desc {
+    opacity: 1;
+    pointer-events: none;
+}
+
+.service-btn.is-revealed .service-btn__label {
+    opacity: 0;
+}
