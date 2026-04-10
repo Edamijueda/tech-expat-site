@@ -9,7 +9,7 @@ WORKDIR /app
 COPY . ./
 
 # Build the app
-RUN ./gradlew -DskipTests clean build
+RUN ./gradlew clean build -x test
 
 # Run the app by dynamically finding the JAR file in the build/libs directory
 CMD ["sh", "-c", "java -Dspring.profiles.active=prod -jar build/libs/*.jar"]
