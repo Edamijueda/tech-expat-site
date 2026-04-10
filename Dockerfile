@@ -8,8 +8,8 @@ WORKDIR /app
 # Copy local code to the container image
 COPY . ./
 
-# Build the app and rename JAR to a known filename
-RUN ./gradlew clean build -x test && cp build/libs/*.jar app.jar
+# Build the app
+RUN ./gradlew clean build -x test
 
 # Run the app
-CMD ["java", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
+CMD ["sh", "-c", "java -Dspring.profiles.active=prod -jar build/libs/*.jar"]
