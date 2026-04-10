@@ -36,6 +36,10 @@ springBoot {
 	buildInfo()
 }
 
+jar {
+	enabled = false
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
