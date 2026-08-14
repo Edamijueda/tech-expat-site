@@ -1,8 +1,6 @@
 (function () {
     'use strict';
 
-    var LONG_PRESS_MS = 500;
-
     function revealBtn(btn) {
         var alreadyRevealed = btn.classList.contains('is-revealed');
         // Close any currently open button
@@ -15,46 +13,26 @@
         }
     }
 
+    // Touch: first tap reveals the description, second tap navigates
     document.querySelectorAll('.service-btn').forEach(function (btn) {
-        var timer = null;
-        var longPressActivated = false;
+        var moved = false;
 
         btn.addEventListener('touchstart', function () {
-            longPressActivated = false;
-            timer = setTimeout(function () {
-                longPressActivated = true;
-                revealBtn(btn);
-            }, LONG_PRESS_MS);
+            moved = false;
         }, { passive: true });
 
-        // Scrolling cancels the long-press timer
         btn.addEventListener('touchmove', function () {
-            clearTimeout(timer);
-            timer = null;
+            moved = true;
         }, { passive: true });
 
         btn.addEventListener('touchend', function (e) {
-            clearTimeout(timer);
-            timer = null;
-
-            if (longPressActivated) {
-                // Long press fired — block the subsequent click so we don't navigate
-                e.preventDefault();
-            } else if (btn.classList.contains('is-revealed')) {
-                // Tap while description is showing — dismiss instead of navigate
-                e.preventDefault();
-                btn.classList.remove('is-revealed');
-            }
-            // Otherwise: normal short tap → navigation proceeds as usual
+            if (moved) return;                                    // treat as scroll, not a tap
+            if (btn.classList.contains('is-revealed')) return;    // already revealed → let navigation happen
+            e.preventDefault();                                    // first tap: reveal instead of navigate
+            revealBtn(btn);
         });
-
-        btn.addEventListener('touchcancel', function () {
-            clearTimeout(timer);
-            timer = null;
-        }, { passive: true });
     });
 
-    // Dismiss on outside tap
     document.addEventListener('touchstart', function (e) {
         if (!e.target.closest('.service-btn')) {
             document.querySelectorAll('.service-btn.is-revealed').forEach(function (b) {
@@ -78,6 +56,7 @@
             toggle.textContent = showingBusiness
                 ? toggle.dataset.labelBusiness
                 : toggle.dataset.labelIndividuals;
+            toggle.blur();
         });
     }
 
