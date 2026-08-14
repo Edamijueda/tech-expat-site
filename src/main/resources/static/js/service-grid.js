@@ -63,4 +63,22 @@
         }
     }, { passive: true });
 
+    // Audience toggle: swap business/individuals grids and flip the button label
+    var toggle = document.getElementById('audience-toggle');
+    if (toggle) {
+        var grids = {
+            business: document.querySelector('[data-audience="business"]'),
+            individuals: document.querySelector('[data-audience="individuals"]')
+        };
+        toggle.addEventListener('click', function () {
+            var showingBusiness = !grids.business.hidden;
+            var next = showingBusiness ? 'individuals' : 'business';
+            grids.business.hidden = (next !== 'business');
+            grids.individuals.hidden = (next !== 'individuals');
+            toggle.textContent = showingBusiness
+                ? toggle.dataset.labelBusiness
+                : toggle.dataset.labelIndividuals;
+        });
+    }
+
 }());

@@ -11,9 +11,9 @@ public class HomeController {
         return "index";
     }
 
-    @GetMapping("/builder")
-    public String builder() {
-        return "builder";
+    @GetMapping("/course-outline")
+    public String courseOutline() {
+        return "course-outline";
     }
 
 }
