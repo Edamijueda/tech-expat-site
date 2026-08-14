@@ -2,19 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <body>
 
-<!--
-    Reusable service button fragment.
-
-    Parameters:
-      label       - Button label text (e.g. "IT Consulting")
-      description - Short description shown on hover (desktop) or long press (mobile)
-
-    Desktop : description reveals on :hover and :focus-visible via CSS.
-    Mobile  : description reveals on long press (~500ms hold) via JS in service-grid.js.
-              A regular tap will navigate (href set per page once pages are built).
--->
-<div th:fragment="serviceButton(label, description)" class="col d-flex">
-    <a href="#"
+<div th:fragment="serviceBtn(label, description, href)" class="col d-flex">
+    <a th:href="${href}"
        class="service-btn btn border border-2 border-dark rounded-0
               d-flex align-items-center justify-content-center
               position-relative w-100 text-decoration-none text-dark"

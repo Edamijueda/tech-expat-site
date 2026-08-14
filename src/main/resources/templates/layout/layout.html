@@ -11,6 +11,13 @@
 <body class="d-flex flex-column min-vh-100">
 
     <header>
+        <div layout:fragment="notice">
+            <div class="alert alert-info alert-dismissible fade show text-center mb-0 rounded-0 py-2" role="alert">
+                See our updated <a th:href="@{/course-outline}" class="alert-link">courses</a>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+                        style="font-size:.7rem;padding:.85rem;"></button>
+            </div>
+        </div>
         <!-- <nav>
             <a th:href="@{/}">Home</a>
         </nav> -->
@@ -20,7 +27,7 @@
         <!-- Page content goes here -->
     </main>
 
-    <footer class="d-flex justify-content-between align-items-center px-3">
+    <footer class="d-flex justify-content-between align-items-center px-3 py-2">
         <p class="mb-0">&copy; 2026 </p>
         <p class="mb-0">hello@tech-expat.com</p>
     </footer>

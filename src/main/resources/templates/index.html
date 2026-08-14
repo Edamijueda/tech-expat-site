@@ -4,48 +4,98 @@
       layout:decorate="~{layout/layout}"
       lang="en">
 <head>
-    <title>Visionary</title>
+    <title>For Business</title>
     <link rel="stylesheet" th:href="@{/css/service-grid.css}">
 </head>
 <body>
 
 <main layout:fragment="content">
 
-    <!-- Toggle: View as Builder -->
+    <!-- Audience toggle -->
     <div class="d-flex justify-content-end p-3">
-        <a th:href="@{/builder}" class="btn btn-outline-dark fw-bold">View as Builder</a>
+        <button type="button"
+                id="audience-toggle"
+                class="btn btn-outline-dark fw-bold"
+                data-label-business="For Business"
+                data-label-individuals="For Individuals">For Individuals</button>
     </div>
 
     <!-- Service grid — centered vertically and horizontally -->
     <section class="flex-grow-1 d-flex justify-content-center align-items-center py-5">
         <div class="px-4 px-lg-5" style="width: 100%; max-width: 960px;">
-            <div class="row row-cols-2 row-cols-lg-3 g-3 g-lg-4 justify-content-center">
 
-                <div th:replace="~{fragments/service-button :: serviceButton(
+            <!-- Business grid (default) -->
+            <div class="row row-cols-2 row-cols-lg-3 g-3 g-lg-4 justify-content-center"
+                 data-audience="business">
+
+                <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'IT Consulting',
-                    'Get expert guidance to shape your tech idea into a clear strategy')}"></div>
+                    'Get expert guidance to shape your tech idea into a clear strategy',
+                    '#')}"></div>
 
-                <div th:replace="~{fragments/service-button :: serviceButton(
+                <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Maintain',
-                    'Keep your product running reliably with ongoing professional support')}"></div>
+                    'Keep your product running reliably with ongoing professional support',
+                    '#')}"></div>
 
-                <div th:replace="~{fragments/service-button :: serviceButton(
+                <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Build',
-                    'We build your complete vision — from concept to working product')}"></div>
+                    'We build your complete vision — from concept to working product',
+                    '#')}"></div>
 
-                <div th:replace="~{fragments/service-button :: serviceButton(
+                <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Learn',
-                    'Understand your tech so you can lead your project with confidence')}"></div>
+                    'Understand your tech so you can lead your project with confidence',
+                    '#')}"></div>
 
-                <div th:replace="~{fragments/service-button :: serviceButton(
+                <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Design',
-                    'Create beautiful, intuitive interfaces your users will love')}"></div>
+                    'Create beautiful, intuitive interfaces your users will love',
+                    '#')}"></div>
 
-                <div th:replace="~{fragments/service-button :: serviceButton(
+                <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Team',
-                    'Work with a dedicated team of experts who bring your vision to life')}"></div>
+                    'Work with a dedicated team of experts who bring your vision to life',
+                    '#')}"></div>
 
             </div>
+
+            <!-- Individuals grid (hidden by default) -->
+            <div class="row row-cols-2 row-cols-lg-3 g-3 g-lg-4 justify-content-center"
+                 data-audience="individuals" hidden>
+
+                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    'Course Outline',
+                    'Get Skilled in Modern Programming style in an AI world, Database design',
+                    @{/course-outline})}"></div>
+
+                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    'Maintain',
+                    'Collaborative code ownership, refactoring, and system reliability',
+                    '#')}"></div>
+
+                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    'Build',
+                    'Partner with senior engineers on ambitious technical challenges',
+                    '#')}"></div>
+
+                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    'Learn',
+                    'Advanced workshops, code reviews, and peer-driven skill growth',
+                    '#')}"></div>
+
+                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    'Design',
+                    'Technical design systems, APIs, and component architecture',
+                    '#')}"></div>
+
+                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    'Security',
+                    'Harden your systems with expert audits, penetration testing, and security best practices',
+                    '#')}"></div>
+
+            </div>
+
         </div>
     </section>
 

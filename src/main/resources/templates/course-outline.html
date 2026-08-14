@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}"
+      lang="en">
+<head>
+    <title>Course Outline</title>
+    <style>
+        .course-link { transition: color .15s ease-in-out; }
+        .course-link:hover,
+        .course-link:focus { color: #0d6efd !important; text-decoration: underline !important; }
+    </style>
+</head>
+<body>
+
+<div layout:fragment="notice"></div>
+
+<main layout:fragment="content">
+
+    <div class="d-flex justify-content-end p-3">
+        <a th:href="@{/}" class="btn btn-outline-dark fw-bold">Back to Home</a>
+    </div>
+
+    <section class="flex-grow-1 d-flex justify-content-center align-items-start py-5">
+        <div class="px-4 px-lg-5" style="width: 100%; max-width: 720px;">
+
+            <h1 class="fw-semibold fs-2 mb-4">Course Outline</h1>
+
+            <ol class="list-group list-group-numbered list-group-flush fs-5">
+                <li class="list-group-item border-0 ps-0 py-3">
+                    <a th:href="@{/practical-sql.pdf}" target="_blank" rel="noopener"
+                       class="course-link text-dark fw-semibold text-decoration-none">
+                        Practical SQL Path in a World of Automation &amp; AI
+                    </a>
+                </li>
+                <li class="list-group-item border-0 ps-0 py-3">
+                    <a th:href="@{/modern-java.pdf}" target="_blank" rel="noopener"
+                       class="course-link text-dark fw-semibold text-decoration-none">
+                        Modern Java Programming &mdash; Career Focused
+                    </a>
+                </li>
+                <li class="list-group-item border-0 ps-0 py-3">
+                    <a th:href="@{/frontend-bootcamp.pdf}" target="_blank" rel="noopener"
+                       class="course-link text-dark fw-semibold text-decoration-none">
+                        Frontend Engineering 15 Hours Bootcamp
+                    </a>
+                </li>
+            </ol>
+
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>
