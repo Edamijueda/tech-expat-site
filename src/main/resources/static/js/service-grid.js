@@ -41,22 +41,24 @@
         }
     }, { passive: true });
 
-    // Audience toggle: swap business/individuals grids and flip the button label
+    // Audience selector: pick an audience from the dropdown, swap grids and label
     var toggle = document.getElementById('audience-toggle');
     if (toggle) {
         var grids = {
-            business: document.querySelector('[data-audience="business"]'),
-            individuals: document.querySelector('[data-audience="individuals"]')
+            business: document.querySelector('.row[data-audience="business"]'),
+            individuals: document.querySelector('.row[data-audience="individuals"]')
         };
-        toggle.addEventListener('click', function () {
-            var showingBusiness = !grids.business.hidden;
-            var next = showingBusiness ? 'individuals' : 'business';
-            grids.business.hidden = (next !== 'business');
-            grids.individuals.hidden = (next !== 'individuals');
-            toggle.textContent = showingBusiness
-                ? toggle.dataset.labelBusiness
-                : toggle.dataset.labelIndividuals;
-            toggle.blur();
+        var items = document.querySelectorAll('.dropdown-item[data-audience]');
+
+        items.forEach(function (item) {
+            item.addEventListener('click', function () {
+                var next = item.dataset.audience;
+                grids.business.hidden = (next !== 'business');
+                grids.individuals.hidden = (next !== 'individuals');
+                toggle.textContent = item.textContent;
+                items.forEach(function (i) { i.classList.remove('active'); });
+                item.classList.add('active');
+            });
         });
     }
 

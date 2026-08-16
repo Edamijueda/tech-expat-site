@@ -23,7 +23,7 @@
     transition: opacity 0.18s ease;
 }
 
-/* ── Desktop: hover and keyboard focus ───────────────────── */
+/* ── Desktop: hover and keyboard focus */
 @media (hover: hover) and (pointer: fine) {
 
     .service-btn:hover .service-btn__desc,
@@ -44,7 +44,7 @@
     }
 }
 
-/* ── Mobile: long-press toggle via JS ────────────────────── */
+/* Mobile: long-press toggle via JS */
 .service-btn.is-revealed .service-btn__desc {
     opacity: 1;
     pointer-events: none;
@@ -52,4 +52,12 @@
 
 .service-btn.is-revealed .service-btn__label {
     opacity: 0;
+}
+
+/* ── Audience dropdown: quiet active state */
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: #f8f9fa;
+    color: inherit;
+    font-weight: 600;
 }
