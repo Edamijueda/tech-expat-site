@@ -14,3 +14,6 @@ management:
   info:
     env:
       enabled: true
+
+posthog:
+  key: ${POSTHOG_KEY:}
