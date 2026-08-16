@@ -10,13 +10,25 @@
 
 <main layout:fragment="content">
 
-    <!-- Audience toggle -->
+    <!-- Audience selector -->
     <div class="d-flex justify-content-end p-3">
-        <button type="button"
-                id="audience-toggle"
-                class="btn btn-outline-dark fw-bold"
-                data-label-business="For Business"
-                data-label-individuals="For Individuals">For Individuals</button>
+        <div class="dropdown">
+            <button type="button"
+                    id="audience-toggle"
+                    class="btn btn-outline-dark fw-bold dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">For Business</button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <button type="button" class="dropdown-item active"
+                            data-audience="business">For Business</button>
+                </li>
+                <li>
+                    <button type="button" class="dropdown-item"
+                            data-audience="individuals">For Individuals</button>
+                </li>
+            </ul>
+        </div>
     </div>
 
     <!-- Service grid — centered vertically and horizontally -->
