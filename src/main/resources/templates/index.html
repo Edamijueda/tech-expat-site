@@ -1,120 +1,116 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}"
-      lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
 <head>
     <link rel="stylesheet" th:href="@{/css/service-grid.css}">
 </head>
+
 <body>
 
-<main layout:fragment="content">
+    <main layout:fragment="content">
 
-    <!-- Audience selector -->
-    <div class="d-flex justify-content-end p-3">
-        <div class="dropdown">
-            <button type="button"
-                    id="audience-toggle"
-                    class="btn btn-outline-dark fw-bold dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false">For Business</button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <button type="button" class="dropdown-item active"
-                            data-audience="business">For Business</button>
-                </li>
-                <li>
-                    <button type="button" class="dropdown-item"
-                            data-audience="individuals">For Individuals</button>
-                </li>
-            </ul>
+        <!-- Audience selector -->
+        <div class="d-flex justify-content-end p-3">
+            <div class="dropdown">
+                <button type="button" id="audience-toggle" class="btn btn-outline-dark fw-bold dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false">For Business</button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <button type="button" class="dropdown-item active" data-audience="business">For
+                            Business</button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item" data-audience="individuals">For Individuals</button>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
 
-    <!-- Service grid — centered vertically and horizontally -->
-    <section class="flex-grow-1 d-flex justify-content-center align-items-center py-5">
-        <div class="px-4 px-lg-5" style="width: 100%; max-width: 960px;">
+        <!-- Service grid — centered vertically and horizontally -->
+        <section class="flex-grow-1 d-flex justify-content-center align-items-center py-5">
+            <div class="px-4 px-lg-5" style="width: 100%; max-width: 960px;">
 
-            <!-- Business grid (default) -->
-            <div class="row row-cols-2 row-cols-lg-3 g-3 g-lg-4 justify-content-center"
-                 data-audience="business">
+                <!-- Business grid (default) -->
+                <div class="row row-cols-2 row-cols-lg-3 g-3 g-lg-4 justify-content-center" data-audience="business">
 
-                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'IT Consulting',
                     'Get expert guidance to shape your tech idea into a clear strategy',
                     '#')}"></div>
 
-                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Maintenance',
                     'Keep your product running reliably with ongoing professional support',
                     '#')}"></div>
 
-                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Build',
                     'We build your complete vision from concept to working product',
                     '#')}"></div>
 
-                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Learn',
                     'Understand your tech so you can lead your project with confidence',
                     '#')}"></div>
 
-                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Design',
                     'Create beautiful, intuitive interfaces your users will love',
                     '#')}"></div>
 
-                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Process Automation',
                     'Bots, AI agents, & workflows to automate biz processes',
                     '#')}"></div>
 
-            </div>
+                </div>
 
-            <!-- Individuals grid (hidden by default) -->
-            <div class="row row-cols-2 row-cols-lg-3 g-3 g-lg-4 justify-content-center"
-                 data-audience="individuals" hidden>
+                <!-- Individuals grid (hidden by default) -->
+                <div class="row row-cols-2 row-cols-lg-3 g-3 g-lg-4 justify-content-center" data-audience="individuals"
+                    hidden>
 
-                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Course Outline',
                     'Get Skilled in Modern Programming style in an AI world',
                     @{/course-outline})}"></div>
 
-                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Data Systems',
                     'Database design, query optimization, and reliable data pipelines',
                     '#')}"></div>
 
-                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Build',
                     'Partner with senior engineers on ambitious technical challenges',
                     '#')}"></div>
 
-                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Learn',
                     'Advanced workshops, code reviews, and peer-driven skill growth',
                     '#')}"></div>
 
-                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Design',
                     'Technical design systems, APIs, and component architecture',
                     '#')}"></div>
 
-                <div th:replace="~{fragments/service-btn :: serviceBtn(
+                    <div th:replace="~{fragments/service-btn :: serviceBtn(
                     'Security',
                     'Harden your systems with audits, pen testing, and security best practices',
                     '#')}"></div>
 
+                </div>
+
             </div>
+        </section>
 
-        </div>
-    </section>
+    </main>
 
-</main>
-
-<th:block layout:fragment="scripts">
-    <script th:src="@{/js/service-grid.js}"></script>
-</th:block>
+    <th:block layout:fragment="scripts">
+        <script th:src="@{/js/service-grid.js}"></script>
+    </th:block>
 
 </body>
+
 </html>
