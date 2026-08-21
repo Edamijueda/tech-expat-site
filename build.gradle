@@ -25,6 +25,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.4.0'
+	implementation 'org.commonmark:commonmark:0.30.0'
+	implementation 'org.commonmark:commonmark-ext-yaml-front-matter:0.30.0'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
