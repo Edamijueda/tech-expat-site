@@ -27,8 +27,16 @@
                 <span th:text="${post.author}">Author</span>
                 <span> &middot; </span>
                 <span th:text="${post.formattedDate}">Date</span>
+                <th:block th:if="${post.updatedDate != null}">
+                    <span> &middot; </span>
+                    <span th:text="'Updated ' + ${post.formattedUpdatedDate}">Updated 31 Aug, 2026</span>
+                </th:block>
                 <span> &middot; </span>
                 <span th:text="${post.readingMinutes} + ' min read'">3 min read</span>
+                <span> &middot; </span>
+                <span th:text="${post.aiPercent} + '% AI'">30% AI</span>
+                <span> &middot; </span>
+                <span th:text="${post.humanPercent} + '% human'">70% human</span>
             </p>
 
             <div class="research-body" th:utext="${post.htmlBody}"></div>

@@ -77,11 +77,31 @@ public class ResearchService {
         String author = require(data, "author");
         LocalDate date = LocalDate.parse(require(data, "date"));
         String description = require(data, "description");
+        int aiPercent = requireAiPercent(data, slug);
+        LocalDate updatedDate = optional(data, "updated").map(LocalDate::parse).orElse(null);
 
         String htmlBody = RENDERER.render(document);
         int readingMinutes = computeReadingMinutes(document);
 
-        return new ResearchPost(slug, order, title, author, date, description, htmlBody, readingMinutes);
+        return new ResearchPost(slug, order, title, author, date, description, htmlBody, readingMinutes, aiPercent, updatedDate);
+    }
+
+    private static Optional<String> optional(Map<String, List<String>> data, String key) {
+        List<String> values = data.get(key);
+        if (values == null || values.isEmpty()) {
+            return Optional.empty();
+        }
+        String value = values.get(0);
+        return (value == null || value.isBlank()) ? Optional.empty() : Optional.of(value);
+    }
+
+    private static int requireAiPercent(Map<String, List<String>> data, String slug) {
+        int value = Integer.parseInt(require(data, "ai_percent"));
+        if (value < 0 || value > 100) {
+            throw new IllegalStateException(
+                    "ai_percent must be between 0 and 100 for post '" + slug + "', got " + value);
+        }
+        return value;
     }
 
     private static String require(Map<String, List<String>> data, String key) {
