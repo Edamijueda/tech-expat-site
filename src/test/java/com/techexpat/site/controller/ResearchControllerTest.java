@@ -37,7 +37,7 @@ class ResearchControllerTest {
     private static final ResearchPost SAMPLE = new ResearchPost(
             "known", 1, "Known Post", "Tobi Omorubore",
             LocalDate.of(2026, 1, 1),
-            "desc", "<p>body</p>", 1);
+            "desc", "<p>body</p>", 1, 30, null);
 
     @Test
     void researchIndexReturnsOkAndExposesPostsList() throws Exception {
