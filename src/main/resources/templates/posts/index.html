@@ -4,11 +4,11 @@
       layout:decorate="~{layout/layout}"
       lang="en">
 <head>
-    <title>Research</title>
+    <title th:text="${section.label}">Section</title>
     <style>
-        .research-link { transition: color .15s ease-in-out; }
-        .research-link:hover,
-        .research-link:focus { color: #0d6efd !important; text-decoration: underline !important; }
+        .post-link { transition: color .15s ease-in-out; }
+        .post-link:hover,
+        .post-link:focus { color: #0d6efd !important; text-decoration: underline !important; }
     </style>
 </head>
 <body>
@@ -24,12 +24,12 @@
     <section class="flex-grow-1 d-flex justify-content-center align-items-start py-5">
         <div class="px-4 px-lg-5" style="width: 100%; max-width: 720px;">
 
-            <h1 class="fw-semibold fs-2 mb-4">Research</h1>
+            <h1 class="fw-semibold fs-2 mb-4" th:text="${section.label}">Section</h1>
 
             <ol class="list-group list-group-numbered list-group-flush fs-5">
                 <li th:each="post : ${posts}" class="list-group-item border-0 ps-0 py-3">
-                    <a th:href="@{/research/{slug}(slug=${post.slug})}"
-                       class="research-link text-dark fw-semibold text-decoration-none"
+                    <a th:href="@{/{section}/{slug}(section=${section.slug},slug=${post.slug})}"
+                       class="post-link text-dark fw-semibold text-decoration-none"
                        th:text="${post.title}">Post title</a>
                 </li>
             </ol>

@@ -1,6 +1,7 @@
 package com.techexpat.site.service;
 
-import com.techexpat.site.model.ResearchPost;
+import com.techexpat.site.model.Post;
+import com.techexpat.site.model.Section;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -8,7 +9,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class ResearchServiceTest {
+class PostServiceTest {
 
     @Test
     void parsesFrontMatterAndRendersBody() {
@@ -21,6 +22,8 @@ class ResearchServiceTest {
                 date: 2026-03-14
                 description: One line.
                 ai_percent: 30
+                sections:
+                  - research
                 ---
 
                 **TL;DR — a fixture.**
@@ -28,7 +31,7 @@ class ResearchServiceTest {
                 A short body paragraph so the reading-time formula runs.
                 """;
 
-        ResearchPost post = ResearchService.parse(markdown);
+        Post post = PostService.parse(markdown);
 
         assertThat(post.slug()).isEqualTo("my-slug");
         assertThat(post.order()).isEqualTo(3);
@@ -43,6 +46,7 @@ class ResearchServiceTest {
         assertThat(post.humanPercent()).isEqualTo(70);
         assertThat(post.updatedDate()).isNull();
         assertThat(post.formattedUpdatedDate()).isNull();
+        assertThat(post.sections()).containsExactly(Section.RESEARCH);
     }
 
     @Test
@@ -57,12 +61,14 @@ class ResearchServiceTest {
                 description: One line.
                 ai_percent: 30
                 updated: 2026-08-31
+                sections:
+                  - research
                 ---
 
                 Body.
                 """;
 
-        ResearchPost post = ResearchService.parse(markdown);
+        Post post = PostService.parse(markdown);
 
         assertThat(post.updatedDate()).isEqualTo(LocalDate.of(2026, 8, 31));
         assertThat(post.formattedUpdatedDate()).isEqualTo("31 Aug, 2026");
@@ -70,10 +76,10 @@ class ResearchServiceTest {
 
     @Test
     void acceptsAiPercentBoundaries() {
-        assertThat(ResearchService.parse(fixture(0)).aiPercent()).isEqualTo(0);
-        assertThat(ResearchService.parse(fixture(0)).humanPercent()).isEqualTo(100);
-        assertThat(ResearchService.parse(fixture(100)).aiPercent()).isEqualTo(100);
-        assertThat(ResearchService.parse(fixture(100)).humanPercent()).isEqualTo(0);
+        assertThat(PostService.parse(fixture(0)).aiPercent()).isEqualTo(0);
+        assertThat(PostService.parse(fixture(0)).humanPercent()).isEqualTo(100);
+        assertThat(PostService.parse(fixture(100)).aiPercent()).isEqualTo(100);
+        assertThat(PostService.parse(fixture(100)).humanPercent()).isEqualTo(0);
     }
 
     @Test
@@ -86,19 +92,21 @@ class ResearchServiceTest {
                 author: Tobi Omorubore
                 date: 2026-03-14
                 description: One line.
+                sections:
+                  - research
                 ---
 
                 Body.
                 """;
 
-        assertThatThrownBy(() -> ResearchService.parse(markdown))
+        assertThatThrownBy(() -> PostService.parse(markdown))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("ai_percent");
     }
 
     @Test
     void rejectsNegativeAiPercent() {
-        assertThatThrownBy(() -> ResearchService.parse(fixture(-1)))
+        assertThatThrownBy(() -> PostService.parse(fixture(-1)))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("ai_percent")
                 .hasMessageContaining("my-slug");
@@ -106,9 +114,78 @@ class ResearchServiceTest {
 
     @Test
     void rejectsAiPercentAboveHundred() {
-        assertThatThrownBy(() -> ResearchService.parse(fixture(101)))
+        assertThatThrownBy(() -> PostService.parse(fixture(101)))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("ai_percent")
+                .hasMessageContaining("my-slug");
+    }
+
+    @Test
+    void parsesMultipleSections() {
+        String markdown = """
+                ---
+                slug: my-slug
+                order: 1
+                title: My Title
+                author: Tobi Omorubore
+                date: 2026-03-14
+                description: One line.
+                ai_percent: 30
+                sections:
+                  - research
+                  - blog
+                ---
+
+                Body.
+                """;
+
+        Post post = PostService.parse(markdown);
+
+        assertThat(post.sections()).containsExactlyInAnyOrder(Section.RESEARCH, Section.BLOG);
+    }
+
+    @Test
+    void rejectsMissingSections() {
+        String markdown = """
+                ---
+                slug: my-slug
+                order: 1
+                title: My Title
+                author: Tobi Omorubore
+                date: 2026-03-14
+                description: One line.
+                ai_percent: 30
+                ---
+
+                Body.
+                """;
+
+        assertThatThrownBy(() -> PostService.parse(markdown))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("sections");
+    }
+
+    @Test
+    void rejectsUnknownSection() {
+        String markdown = """
+                ---
+                slug: my-slug
+                order: 1
+                title: My Title
+                author: Tobi Omorubore
+                date: 2026-03-14
+                description: One line.
+                ai_percent: 30
+                sections:
+                  - not-a-real-section
+                ---
+
+                Body.
+                """;
+
+        assertThatThrownBy(() -> PostService.parse(markdown))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("not-a-real-section")
                 .hasMessageContaining("my-slug");
     }
 
@@ -122,6 +199,8 @@ class ResearchServiceTest {
                 date: 2026-03-14
                 description: One line.
                 ai_percent: %d
+                sections:
+                  - research
                 ---
 
                 Body.

@@ -2,8 +2,9 @@ package com.techexpat.site.controller;
 
 import com.techexpat.site.config.PosthogProperties;
 import com.techexpat.site.config.WebSecurityConfig;
-import com.techexpat.site.model.ResearchPost;
-import com.techexpat.site.service.ResearchService;
+import com.techexpat.site.model.Post;
+import com.techexpat.site.model.Section;
+import com.techexpat.site.service.PostService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -14,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -21,9 +23,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@WebMvcTest(ResearchController.class)
+@WebMvcTest(PostController.class)
 @Import(WebSecurityConfig.class)
-class ResearchControllerTest {
+class PostControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -32,38 +34,47 @@ class ResearchControllerTest {
     PosthogProperties posthogProperties;
 
     @MockitoBean
-    ResearchService researchService;
+    PostService postService;
 
-    private static final ResearchPost SAMPLE = new ResearchPost(
+    private static final Post SAMPLE = new Post(
             "known", 1, "Known Post", "Tobi Omorubore",
             LocalDate.of(2026, 1, 1),
-            "desc", "<p>body</p>", 1, 30, null);
+            "desc", "<p>body</p>", 1, 30, null,
+            Set.of(Section.RESEARCH));
 
     @Test
-    void researchIndexReturnsOkAndExposesPostsList() throws Exception {
-        when(researchService.findAll()).thenReturn(List.of(SAMPLE));
+    void sectionIndexReturnsOkAndExposesPostsList() throws Exception {
+        when(postService.findBySection(Section.RESEARCH)).thenReturn(List.of(SAMPLE));
 
         mockMvc.perform(get("/research"))
                .andExpect(status().isOk())
-               .andExpect(view().name("research/index"))
-               .andExpect(model().attributeExists("posts"));
+               .andExpect(view().name("posts/index"))
+               .andExpect(model().attributeExists("posts"))
+               .andExpect(model().attribute("section", Section.RESEARCH));
     }
 
     @Test
-    void researchPostReturnsOkForKnownSlug() throws Exception {
-        when(researchService.findBySlug("known")).thenReturn(Optional.of(SAMPLE));
+    void sectionPostReturnsOkForKnownSlug() throws Exception {
+        when(postService.findBySectionAndSlug(Section.RESEARCH, "known")).thenReturn(Optional.of(SAMPLE));
 
         mockMvc.perform(get("/research/known"))
                .andExpect(status().isOk())
-               .andExpect(view().name("research/post"))
-               .andExpect(model().attribute("post", SAMPLE));
+               .andExpect(view().name("posts/post"))
+               .andExpect(model().attribute("post", SAMPLE))
+               .andExpect(model().attribute("section", Section.RESEARCH));
     }
 
     @Test
-    void researchPostReturnsNotFoundForUnknownSlug() throws Exception {
-        when(researchService.findBySlug("nope")).thenReturn(Optional.empty());
+    void sectionPostReturnsNotFoundForUnknownSlug() throws Exception {
+        when(postService.findBySectionAndSlug(Section.RESEARCH, "nope")).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/research/nope"))
+               .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void unknownSectionReturnsNotFound() throws Exception {
+        mockMvc.perform(get("/marketing"))
                .andExpect(status().isNotFound());
     }
 }

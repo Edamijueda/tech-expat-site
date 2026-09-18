@@ -7,6 +7,9 @@ date: 2026-08-20
 description: Notes on why short, distilled posts serve modern readers better than long-form essays.
 ai_percent: 30
 updated: 2026-08-31
+sections:
+  - research
+  - blog
 ---
 
 **TL;DR - In an age where attention is scarce, a research post earns its keep by giving readers the whole idea in three minutes or less.**
@@ -23,4 +26,4 @@ Three habits we hold research posts to:
 
 The payoff is not just for readers. Writing to this shape sharpens my own thinking, every draft is a compression pass.
 
-The next few entries in this section will follow this discipline. If they don't, the format has failed and will be revisit.
+The next few posts in this section will follow this discipline. If they don't, the format has failed and will be revisit.
