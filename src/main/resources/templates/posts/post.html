@@ -4,12 +4,12 @@
       layout:decorate="~{layout/layout}"
       lang="en">
 <head>
-    <title th:text="${post.title}">Research Post</title>
+    <title th:text="${post.title}">Post</title>
     <style>
-        .research-body p { margin-bottom: 1rem; }
-        .research-body h2 { font-size: 1.25rem; font-weight: 600; margin-top: 2rem; margin-bottom: .75rem; }
-        .research-body ul, .research-body ol { margin-bottom: 1rem; }
-        .research-body a { color: #0d6efd; }
+        .post-body p { margin-bottom: 1rem; }
+        .post-body h2 { font-size: 1.25rem; font-weight: 600; margin-top: 2rem; margin-bottom: .75rem; }
+        .post-body ul, .post-body ol { margin-bottom: 1rem; }
+        .post-body a { color: #0d6efd; }
     </style>
 </head>
 <body>
@@ -39,10 +39,13 @@
                 <span th:text="${post.humanPercent} + '% human'">70% human</span>
             </p>
 
-            <div class="research-body" th:utext="${post.htmlBody}"></div>
+            <div class="post-body" th:utext="${post.htmlBody}"></div>
 
             <p class="mt-5 small">
-                <a th:href="@{/research}" class="text-muted text-decoration-none">&larr; More research posts</a>
+                <a th:href="@{/{section}(section=${section.slug})}"
+                   class="text-muted text-decoration-none">
+                    &larr; More <span th:text="${#strings.toLowerCase(section.label)}">section</span> posts
+                </a>
             </p>
 
         </div>

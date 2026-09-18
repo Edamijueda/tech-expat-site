@@ -1,6 +1,7 @@
 package com.techexpat.site.service;
 
-import com.techexpat.site.model.ResearchPost;
+import com.techexpat.site.model.Post;
+import com.techexpat.site.model.Section;
 import org.commonmark.ext.front.matter.YamlFrontMatterExtension;
 import org.commonmark.ext.front.matter.YamlFrontMatterVisitor;
 import org.commonmark.node.AbstractVisitor;
@@ -19,52 +20,64 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class ResearchService {
+public class PostService {
 
-    private static final String RESOURCE_PATTERN = "classpath:/research/*.md";
+    private static final String RESOURCE_PATTERN = "classpath:/posts/*.md";
     private static final int WORDS_PER_MINUTE = 220;
     private static final List<org.commonmark.Extension> EXTENSIONS =
             List.of(YamlFrontMatterExtension.create());
     private static final Parser PARSER = Parser.builder().extensions(EXTENSIONS).build();
     private static final HtmlRenderer RENDERER = HtmlRenderer.builder().extensions(EXTENSIONS).build();
 
-    private final List<ResearchPost> posts;
-    private final Map<String, ResearchPost> bySlug;
+    private final List<Post> posts;
+    private final Map<String, Post> bySlug;
 
-    public ResearchService() throws IOException {
-        List<ResearchPost> loaded = loadAll(new PathMatchingResourcePatternResolver());
+    public PostService() throws IOException {
+        List<Post> loaded = loadAll(new PathMatchingResourcePatternResolver());
         this.posts = List.copyOf(loaded);
         this.bySlug = loaded.stream()
-                .collect(Collectors.toUnmodifiableMap(ResearchPost::slug, p -> p));
+                .collect(Collectors.toUnmodifiableMap(Post::slug, p -> p));
     }
 
-    public List<ResearchPost> findAll() {
+    public List<Post> findAll() {
         return posts;
     }
 
-    public Optional<ResearchPost> findBySlug(String slug) {
+    public List<Post> findBySection(Section section) {
+        return posts.stream()
+                .filter(p -> p.sections().contains(section))
+                .toList();
+    }
+
+    public Optional<Post> findBySlug(String slug) {
         return Optional.ofNullable(bySlug.get(slug));
     }
 
-    private static List<ResearchPost> loadAll(PathMatchingResourcePatternResolver resolver) throws IOException {
-        List<ResearchPost> loaded = new ArrayList<>();
+    public Optional<Post> findBySectionAndSlug(Section section, String slug) {
+        return findBySlug(slug).filter(p -> p.sections().contains(section));
+    }
+
+    private static List<Post> loadAll(PathMatchingResourcePatternResolver resolver) throws IOException {
+        List<Post> loaded = new ArrayList<>();
         for (Resource resource : resolver.getResources(RESOURCE_PATTERN)) {
             try (var in = resource.getInputStream()) {
                 String content = new String(in.readAllBytes(), StandardCharsets.UTF_8);
                 loaded.add(parse(content));
             }
         }
-        loaded.sort(Comparator.comparingInt(ResearchPost::order));
+        loaded.sort(Comparator.comparingInt(Post::order));
         return loaded;
     }
 
-    static ResearchPost parse(String markdown) {
+    static Post parse(String markdown) {
         Node document = PARSER.parse(markdown);
 
         YamlFrontMatterVisitor frontMatter = new YamlFrontMatterVisitor();
@@ -79,20 +92,12 @@ public class ResearchService {
         String description = require(data, "description");
         int aiPercent = requireAiPercent(data, slug);
         LocalDate updatedDate = optional(data, "updated").map(LocalDate::parse).orElse(null);
+        Set<Section> sections = requireSections(data, slug);
 
         String htmlBody = RENDERER.render(document);
         int readingMinutes = computeReadingMinutes(document);
 
-        return new ResearchPost(slug, order, title, author, date, description, htmlBody, readingMinutes, aiPercent, updatedDate);
-    }
-
-    private static Optional<String> optional(Map<String, List<String>> data, String key) {
-        List<String> values = data.get(key);
-        if (values == null || values.isEmpty()) {
-            return Optional.empty();
-        }
-        String value = values.get(0);
-        return (value == null || value.isBlank()) ? Optional.empty() : Optional.of(value);
+        return new Post(slug, order, title, author, date, description, htmlBody, readingMinutes, aiPercent, updatedDate, sections);
     }
 
     private static int requireAiPercent(Map<String, List<String>> data, String slug) {
@@ -102,6 +107,32 @@ public class ResearchService {
                     "ai_percent must be between 0 and 100 for post '" + slug + "', got " + value);
         }
         return value;
+    }
+
+    private static Set<Section> requireSections(Map<String, List<String>> data, String slug) {
+        List<String> values = data.get("sections");
+        if (values == null || values.isEmpty()) {
+            throw new IllegalStateException("Missing or empty 'sections' for post '" + slug + "'");
+        }
+        EnumSet<Section> sections = EnumSet.noneOf(Section.class);
+        for (String value : values) {
+            try {
+                sections.add(Section.fromSlug(value.trim()));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalStateException(
+                        "Unknown section '" + value + "' in post '" + slug + "'", e);
+            }
+        }
+        return Set.copyOf(sections);
+    }
+
+    private static Optional<String> optional(Map<String, List<String>> data, String key) {
+        List<String> values = data.get(key);
+        if (values == null || values.isEmpty()) {
+            return Optional.empty();
+        }
+        String value = values.get(0);
+        return (value == null || value.isBlank()) ? Optional.empty() : Optional.of(value);
     }
 
     private static String require(Map<String, List<String>> data, String key) {

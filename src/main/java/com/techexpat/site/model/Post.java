@@ -3,8 +3,9 @@ package com.techexpat.site.model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Set;
 
-public record ResearchPost(
+public record Post(
         String slug,
         int order,
         String title,
@@ -14,7 +15,8 @@ public record ResearchPost(
         String htmlBody,
         int readingMinutes,
         int aiPercent,
-        LocalDate updatedDate
+        LocalDate updatedDate,
+        Set<Section> sections
 ) {
     private static final DateTimeFormatter DISPLAY_DATE =
             DateTimeFormatter.ofPattern("d MMM, yyyy", Locale.ENGLISH);
