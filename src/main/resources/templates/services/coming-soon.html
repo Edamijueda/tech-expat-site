@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title th:text="${title}">Service</title>
+    <meta name="description" th:content="${tagline}">
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-end p-3">
+            <a th:href="@{/}" class="btn btn-outline-dark fw-bold">Back to Home</a>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-5">
+            <div class="px-4 px-lg-5" style="width: 100%; max-width: 720px;">
+
+                <h1 class="fw-semibold fs-2 mb-4" th:text="${title}">Service</h1>
+
+                <p class="fs-5 mb-3" th:text="${tagline}">Tagline.</p>
+
+                <p class="text-muted mb-4">
+                    This page is still being finalized. In the meantime, reach out to discuss how we can help
+                    with <span th:text="${title}">this service</span>.
+                </p>
+
+                <a class="btn btn-dark fw-bold"
+                    th:href="'mailto:hello@tech-expat.com?subject=' + ${#uris.escapePath(title)} + '%20enquiry'"
+                    th:text="'Email hello@tech-expat.com'">Email hello@tech-expat.com</a>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>
