@@ -5,6 +5,13 @@
       lang="en">
 <head>
     <title th:text="${post.title}">Post</title>
+    <meta name="description" th:content="${post.description}">
+    <meta property="og:type" content="article">
+    <meta property="og:title" th:content="${post.title}">
+    <meta property="og:description" th:content="${post.description}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" th:content="${post.title}">
+    <meta name="twitter:description" th:content="${post.description}">
     <style>
         .post-body p { margin-bottom: 1rem; }
         .post-body h2 { font-size: 1.25rem; font-weight: 600; margin-top: 2rem; margin-bottom: .75rem; }
