@@ -1,6 +1,14 @@
 server:
   port: ${PORT:8080}
 
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
 management:
   endpoints:
     web:
