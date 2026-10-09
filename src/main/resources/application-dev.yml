@@ -12,6 +12,12 @@ spring:
       additional-paths: src/main/java, src/main/resources
     livereload:
       enabled: true
+  datasource:
+    url: ${DATABASE_URL:}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
 management:
   info:
     os:
