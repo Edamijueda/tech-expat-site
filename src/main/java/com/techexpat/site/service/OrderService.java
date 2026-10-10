@@ -1,6 +1,7 @@
 package com.techexpat.site.service;
 
 import com.techexpat.site.model.Order;
+import com.techexpat.site.model.OrderStatus;
 import com.techexpat.site.repository.OrderRepository;
 
 import org.springframework.stereotype.Service;
@@ -31,6 +32,18 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Unknown order: " + orderId));
         order.setNowpaymentsInvoiceId(invoiceId);
         return orders.save(order);
+    }
+
+    @Transactional
+    public boolean markPaidIfPending(String orderId, String paymentId) {
+        Order order = orders.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown order: " + orderId));
+        if (order.getStatus() != OrderStatus.PENDING) {
+            return false;
+        }
+        order.setStatus(OrderStatus.PAID);
+        order.setNowpaymentsPaymentId(paymentId);
+        return true;
     }
 
     @Transactional(readOnly = true)
