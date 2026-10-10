@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Order status</title>
+    <meta th:if="${order.status.name() == 'PENDING'}" http-equiv="refresh" content="10">
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-end p-3">
+            <a th:href="@{/}" class="btn btn-outline-dark fw-bold">Back to Home</a>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-5">
+            <div class="px-4 px-lg-5" style="width: 100%; max-width: 560px;">
+
+                <h1 class="fw-semibold fs-3 mb-4">Order status</h1>
+
+                <div th:switch="${order.status.name()}">
+                    <div th:case="'PENDING'" class="alert alert-info" role="alert">
+                        <strong>Waiting for payment.</strong>
+                        <p class="mb-0 small mt-1">This page refreshes every 10 seconds. Once your payment confirms on
+                            the blockchain, the status here will update automatically.</p>
+                    </div>
+                    <div th:case="'PAID'" class="alert alert-success" role="alert">
+                        <strong>Payment received. Thank you!</strong>
+                        <p class="mb-0 small mt-1">We've recorded your order. You'll hear from us at
+                            <span th:text="${order.buyerEmail}">your email</span>
+                            with next steps.</p>
+                    </div>
+                    <div th:case="'FAILED'" class="alert alert-danger" role="alert">
+                        <strong>Payment failed.</strong>
+                        <p class="mb-0 small mt-1">Something went wrong with the payment. Please contact
+                            hello@tech-expat.com and we'll help.</p>
+                    </div>
+                    <div th:case="'EXPIRED'" class="alert alert-warning" role="alert">
+                        <strong>Payment window expired.</strong>
+                        <p class="mb-0 small mt-1">The invoice timed out before payment was received. You can start a
+                            new order from the course page.</p>
+                    </div>
+                </div>
+
+                <div th:if="${result == 'cancel'}" class="alert alert-secondary mt-3" role="alert">
+                    You cancelled the payment flow. If you'd like to try again, start a new order.
+                </div>
+
+                <dl class="row mt-4 small text-muted">
+                    <dt class="col-4">Order id</dt>
+                    <dd class="col-8" th:text="${order.id}">—</dd>
+                    <dt class="col-4">Course</dt>
+                    <dd class="col-8" th:text="${order.courseSlug}">—</dd>
+                    <dt class="col-4">Email</dt>
+                    <dd class="col-8" th:text="${order.buyerEmail}">—</dd>
+                    <dt class="col-4">Amount</dt>
+                    <dd class="col-8">
+                        $<span th:text="${#numbers.formatDecimal(order.priceUsd, 1, 2)}">0.00</span> USD
+                    </dd>
+                </dl>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>
