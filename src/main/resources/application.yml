@@ -1,8 +1,6 @@
 spring:
   application:
     name: TechExpat Site
-  autoconfigure:
-    exclude: org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
 
 info:
   app:
@@ -25,3 +23,7 @@ nowpayments:
   success-url: ${NOWPAYMENTS_SUCCESS_URL:}
   cancel-url: ${NOWPAYMENTS_CANCEL_URL:}
   ipn-callback-url: ${NOWPAYMENTS_IPN_CALLBACK_URL:}
+
+admin:
+  username: ${ADMIN_USERNAME:}
+  password: ${ADMIN_PASSWORD:}
