@@ -17,3 +17,11 @@ management:
 
 posthog:
   key: ${POSTHOG_KEY:}
+
+nowpayments:
+  api-key: ${NOWPAYMENTS_API_KEY:}
+  ipn-secret: ${NOWPAYMENTS_IPN_SECRET:}
+  base-url: ${NOWPAYMENTS_BASE_URL:https://api.nowpayments.io/v1}
+  success-url: ${NOWPAYMENTS_SUCCESS_URL:}
+  cancel-url: ${NOWPAYMENTS_CANCEL_URL:}
+  ipn-callback-url: ${NOWPAYMENTS_IPN_CALLBACK_URL:}
