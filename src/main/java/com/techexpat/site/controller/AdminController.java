@@ -40,4 +40,10 @@ public class AdminController {
         model.addAttribute("course", course);
         return "admin/testing";
     }
+
+    @GetMapping("/course-outline")
+    public String courseOutline(Model model) {
+        model.addAttribute("courses", catalog.all());
+        return "admin/course-outline";
+    }
 }

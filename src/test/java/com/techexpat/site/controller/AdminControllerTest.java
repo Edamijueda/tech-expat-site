@@ -85,4 +85,21 @@ class AdminControllerTest {
         mockMvc.perform(get("/admin/testing/missing").with(httpBasic("admin", "admin")))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void courseOutlineWithoutAuthReturns401() throws Exception {
+        mockMvc.perform(get("/admin/course-outline"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void courseOutlineWithAuthRendersCoursesModel() throws Exception {
+        Course course = new Course("practical-sql", "Practical SQL", new BigDecimal("29.00"));
+        when(catalog.all()).thenReturn(List.of(course));
+
+        mockMvc.perform(get("/admin/course-outline").with(httpBasic("admin", "admin")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin/course-outline"))
+                .andExpect(model().attribute("courses", List.of(course)));
+    }
 }

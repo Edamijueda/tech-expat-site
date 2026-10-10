@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Admin - Course Outline</title>
+    <style>
+        .course-link {
+            transition: color .15s ease-in-out;
+        }
+
+        .course-link:hover,
+        .course-link:focus {
+            color: #0d6efd !important;
+            text-decoration: underline !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-between align-items-center p-3">
+            <a th:href="@{/admin/orders}" class="btn btn-outline-dark fw-bold">Admin: Orders</a>
+            <a th:href="@{/}" class="btn btn-outline-dark fw-bold">Back to Home</a>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-5">
+            <div class="px-4 px-lg-5" style="width: 100%; max-width: 720px;">
+
+                <div class="alert alert-warning small mb-4" role="alert">
+                    <strong>Admin preview.</strong> This mirrors the public course outline but with the
+                    crypto checkout wired up. Use this page to run through the pay flow end-to-end while
+                    the public page stays unchanged.
+                </div>
+
+                <h1 class="fw-semibold fs-2 mb-4">Course Outline</h1>
+
+                <ol class="list-group list-group-numbered list-group-flush fs-5">
+                    <li class="list-group-item border-0 ps-0 py-3" th:each="course : ${courses}">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <span class="course-link text-dark fw-semibold" th:text="${course.title()}">
+                                Course title
+                            </span>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="fw-bold">
+                                    $<span th:text="${#numbers.formatDecimal(course.priceUsd(), 1, 2)}">0.00</span>
+                                </span>
+                                <a th:href="@{'/checkout/' + ${course.slug()}}"
+                                    class="btn btn-dark btn-sm fw-bold">
+                                    Pay with Crypto
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                </ol>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>
