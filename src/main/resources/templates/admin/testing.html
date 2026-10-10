@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Admin - Test delivery</title>
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-end p-3">
+            <a th:href="@{/admin/orders}" class="btn btn-outline-dark fw-bold">Back to Orders</a>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-3">
+            <div class="px-4 px-lg-5" style="width: 100%; max-width: 720px;">
+
+                <div class="alert alert-warning small mb-4" role="alert">
+                    <strong>Test endpoint.</strong> This page stands in for the real post-payment delivery
+                    page. It is admin-only so no real buyer can land here while course content is still
+                    being finalized.
+                </div>
+
+                <h1 class="fw-semibold fs-3 mb-1" th:text="${course != null ? course.title() : order.courseSlug}">
+                    Course title
+                </h1>
+
+                <p class="text-muted small mb-4">
+                    Order <span class="font-monospace" th:text="${order.id}">—</span>
+                </p>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="fw-semibold fs-5 mb-3">Order summary</h2>
+                        <dl class="row mb-0 small">
+                            <dt class="col-4">Status</dt>
+                            <dd class="col-8">
+                                <span th:switch="${order.status.name()}">
+                                    <span th:case="'PAID'" class="badge bg-success">PAID</span>
+                                    <span th:case="'PENDING'" class="badge bg-warning text-dark">PENDING</span>
+                                    <span th:case="'FAILED'" class="badge bg-danger">FAILED</span>
+                                    <span th:case="'EXPIRED'" class="badge bg-secondary">EXPIRED</span>
+                                </span>
+                            </dd>
+                            <dt class="col-4">Buyer</dt>
+                            <dd class="col-8" th:text="${order.buyerEmail}">—</dd>
+                            <dt class="col-4">Amount</dt>
+                            <dd class="col-8">
+                                $<span th:text="${#numbers.formatDecimal(order.priceUsd, 1, 2)}">0.00</span> USD
+                            </dd>
+                            <dt class="col-4">Invoice id</dt>
+                            <dd class="col-8 font-monospace small"
+                                th:text="${order.nowpaymentsInvoiceId} ?: '—'">—</dd>
+                            <dt class="col-4">Payment id</dt>
+                            <dd class="col-8 font-monospace small"
+                                th:text="${order.nowpaymentsPaymentId} ?: '—'">—</dd>
+                            <dt class="col-4">Created</dt>
+                            <dd class="col-8 small text-muted"
+                                th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">—</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="card border-dark">
+                    <div class="card-body text-center py-5">
+                        <p class="fs-5 fw-semibold mb-2">Delivered content goes here</p>
+                        <p class="text-muted small mb-0">
+                            In production this becomes the real delivery page for
+                            <span class="fw-bold" th:text="${order.courseSlug}">course</span>.
+                            For now the owner contacts the buyer at
+                            <a th:href="'mailto:' + ${order.buyerEmail}"
+                               th:text="${order.buyerEmail}">email</a>
+                            to arrange delivery.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

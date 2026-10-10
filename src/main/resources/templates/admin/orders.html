@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Admin - Orders</title>
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-between align-items-center p-3">
+            <h1 class="fw-semibold fs-3 mb-0">Orders</h1>
+            <a th:href="@{/}" class="btn btn-outline-dark fw-bold">Back to Site</a>
+        </div>
+
+        <section class="flex-grow-1 py-3">
+            <div class="px-3 px-lg-4" style="width: 100%;">
+
+                <div th:if="${#lists.isEmpty(orders)}" class="alert alert-info" role="alert">
+                    No orders yet.
+                </div>
+
+                <div th:unless="${#lists.isEmpty(orders)}" class="table-responsive">
+                    <table class="table table-sm table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>Created</th>
+                                <th>Order id</th>
+                                <th>Course</th>
+                                <th>Email</th>
+                                <th class="text-end">Price</th>
+                                <th>Status</th>
+                                <th>Invoice id</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="order : ${orders}">
+                                <td class="small text-muted"
+                                    th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}">—</td>
+                                <td class="small font-monospace" th:text="${order.id}">—</td>
+                                <td th:text="${order.courseSlug}">—</td>
+                                <td class="small" th:text="${order.buyerEmail}">—</td>
+                                <td class="text-end">
+                                    $<span th:text="${#numbers.formatDecimal(order.priceUsd, 1, 2)}">0.00</span>
+                                </td>
+                                <td>
+                                    <span th:switch="${order.status.name()}">
+                                        <span th:case="'PAID'" class="badge bg-success">PAID</span>
+                                        <span th:case="'PENDING'" class="badge bg-warning text-dark">PENDING</span>
+                                        <span th:case="'FAILED'" class="badge bg-danger">FAILED</span>
+                                        <span th:case="'EXPIRED'" class="badge bg-secondary">EXPIRED</span>
+                                    </span>
+                                </td>
+                                <td class="small font-monospace text-muted"
+                                    th:text="${order.nowpaymentsInvoiceId} ?: '—'">—</td>
+                                <td>
+                                    <a th:href="@{'/admin/testing/' + ${order.id}}"
+                                       class="btn btn-sm btn-outline-dark">Open</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>
