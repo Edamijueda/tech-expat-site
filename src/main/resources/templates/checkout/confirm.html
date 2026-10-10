@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title th:text="${'Checkout: ' + course.title()}">Checkout</title>
+    <meta name="description" th:content="${'Pay for ' + course.title() + ' with crypto.'}">
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-end p-3">
+            <a th:href="@{/course-outline}" class="btn btn-outline-dark fw-bold">Back</a>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-5">
+            <div class="px-4 px-lg-5" style="width: 100%; max-width: 560px;">
+
+                <h1 class="fw-semibold fs-3 mb-2" th:text="${course.title()}">Course title</h1>
+
+                <p class="fs-4 fw-bold mb-4">
+                    $<span th:text="${#numbers.formatDecimal(course.priceUsd(), 1, 2)}">0.00</span>
+                    <span class="fs-6 text-muted fw-normal">USD · pay in any crypto</span>
+                </p>
+
+                <div th:if="${error == 'invalid-email'}" class="alert alert-danger py-2" role="alert">
+                    Please enter a valid email address.
+                </div>
+
+                <form th:action="@{'/checkout/' + ${course.slug()}}" method="post">
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">Your email</label>
+                        <input type="email" class="form-control" id="email" name="email" required
+                               placeholder="you@example.com">
+                        <div class="form-text">We'll send order updates here.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark fw-bold w-100">Pay with Crypto</button>
+                </form>
+
+                <p class="text-muted small mt-4 mb-0">
+                    You'll be redirected to NOWPayments to complete payment. Pay in Bitcoin, USDT, USDC,
+                    Ethereum, or any supported cryptocurrency.
+                </p>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>
