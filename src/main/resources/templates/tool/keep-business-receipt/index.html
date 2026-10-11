@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Keep Business Receipt</title>
+    <meta name="description"
+        content="Snap and keep your business receipts. Retrieve from anywhere, anytime.">
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-end p-3">
+            <a th:href="@{/tool}" class="btn btn-outline-dark fw-bold">Back to Tools</a>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-4">
+            <div class="px-4 px-lg-5" style="width: 100%; max-width: 720px;">
+
+                <h1 class="fw-semibold fs-2 mb-3">Keep Business Receipt</h1>
+
+                <p class="fs-5 mb-3">
+                    Snap your supplier and stock-purchase receipts, then retrieve them from any device,
+                    any time.
+                </p>
+
+                <p class="mb-3">
+                    Built for small business owners who like their paper receipts but want a backup
+                    for the moments they don't have the paper with them. We don't replace your filing
+                    habits; we give you a second place to look.
+                </p>
+
+                <p class="text-muted small mb-4">
+                    Access is manually approved to keep things calm and personal. You'll request
+                    access, we'll chat briefly over email about your use case, then you're in.
+                </p>
+
+                <div class="d-flex flex-wrap gap-2 mb-5">
+                    <a class="btn btn-dark fw-bold px-4"
+                        th:href="@{/tool/keep-business-receipt/request-access}">Request access</a>
+                    <a class="btn btn-outline-dark fw-bold px-4"
+                        th:href="@{/tool/keep-business-receipt/sign-in}">Sign in</a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>
