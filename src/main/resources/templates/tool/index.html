@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Tools</title>
+    <meta name="description" content="Small utility tools from TechExpat.">
+    <link rel="stylesheet" th:href="@{/css/service-grid.css}">
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-end p-3">
+            <a th:href="@{/}" class="btn btn-outline-dark fw-bold">Back to Home</a>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-4">
+            <div class="px-4 px-lg-5" style="width: 100%; max-width: 960px;">
+
+                <header class="text-center mb-4 mb-lg-5">
+                    <h1 class="fw-semibold fs-2 mb-2">Tools</h1>
+                    <p class="text-muted mb-0">Small utility tools we build and share.</p>
+                </header>
+
+                <div class="row row-cols-2 row-cols-lg-3 g-3 g-lg-4 justify-content-center">
+
+                    <div th:replace="~{fragments/service-btn :: serviceBtn(
+                        'Keep Business Receipt',
+                        'Snap and keep your business receipts. Retrieve from anywhere.',
+                        @{/tool/keep-business-receipt})}"></div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>
