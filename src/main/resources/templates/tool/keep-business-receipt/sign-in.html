@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Sign in</title>
+    <meta name="description" content="Sign in to Keep Business Receipt.">
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-end p-3">
+            <a th:href="@{/tool/keep-business-receipt}" class="btn btn-outline-dark fw-bold">Back</a>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-4">
+            <div class="px-4" style="width: 100%; max-width: 420px;">
+
+                <h1 class="fw-semibold fs-3 mb-4">Sign in</h1>
+
+                <div th:if="${errorMessage}" class="alert alert-danger" role="alert"
+                    th:text="${errorMessage}">Error.</div>
+                <div th:if="${infoMessage}" class="alert alert-info" role="alert"
+                    th:text="${infoMessage}">Info.</div>
+
+                <form th:action="@{/tool/keep-business-receipt/sign-in}" method="post" novalidate>
+                    <div class="mb-3">
+                        <label for="username" class="form-label fw-bold">Email</label>
+                        <input type="email" id="username" name="username" class="form-control"
+                            required autocomplete="email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label fw-bold">PIN</label>
+                        <input type="password" id="password" name="password" class="form-control"
+                            required inputmode="numeric" pattern="[0-9]{6}" maxlength="6" minlength="6"
+                            autocomplete="current-password">
+                        <div class="form-text">6 digits.</div>
+                    </div>
+                    <button type="submit" class="btn btn-dark fw-bold w-100 mb-3">Sign in</button>
+                </form>
+
+                <div class="small text-center">
+                    <a th:href="@{/tool/keep-business-receipt/forgot-pin}">Forgot PIN?</a>
+                    &middot;
+                    <a th:href="@{/tool/keep-business-receipt/request-access}">Request access</a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

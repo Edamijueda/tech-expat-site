@@ -1,11 +1,15 @@
 package com.techexpat.site.config;
 
+import com.techexpat.site.service.KbrUserDetailsService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,17 +29,6 @@ import java.util.Arrays;
 public class WebSecurityConfig {
 
     private static final Logger log = LoggerFactory.getLogger(WebSecurityConfig.class);
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/admin/**").authenticated()
-                .anyRequest().permitAll())
-            .httpBasic(Customizer.withDefaults())
-            .csrf(csrf -> csrf.disable());
-        return http.build();
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -67,6 +60,60 @@ public class WebSecurityConfig {
                 .roles("ADMIN")
                 .build();
         return new InMemoryUserDetailsManager(admin);
+    }
+
+    @Bean
+    @Order(1)
+    public SecurityFilterChain adminFilterChain(HttpSecurity http,
+                                                 UserDetailsService adminUserDetailsService,
+                                                 PasswordEncoder encoder) throws Exception {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(adminUserDetailsService);
+        provider.setPasswordEncoder(encoder);
+
+        http
+            .securityMatcher("/admin/**")
+            .authorizeHttpRequests(auth -> auth.anyRequest().hasRole("ADMIN"))
+            .httpBasic(Customizer.withDefaults())
+            .csrf(csrf -> csrf.disable())
+            .authenticationProvider(provider);
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain userFilterChain(HttpSecurity http,
+                                                KbrUserDetailsService kbrUserDetailsService,
+                                                PasswordEncoder encoder,
+                                                KbrAuthFailureHandler failureHandler,
+                                                KbrAuthSuccessHandler successHandler) throws Exception {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(kbrUserDetailsService);
+        provider.setPasswordEncoder(encoder);
+
+        http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/tool/keep-business-receipt/dashboard/**",
+                    "/tool/keep-business-receipt/setup",
+                    "/tool/keep-business-receipt/receipts/**",
+                    "/tool/keep-business-receipt/files/**"
+                ).hasRole("KBR_USER")
+                .anyRequest().permitAll())
+            .formLogin(form -> form
+                .loginPage("/tool/keep-business-receipt/sign-in")
+                .loginProcessingUrl("/tool/keep-business-receipt/sign-in")
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .failureHandler(failureHandler)
+                .successHandler(successHandler)
+                .permitAll())
+            .logout(logout -> logout
+                .logoutUrl("/tool/keep-business-receipt/sign-out")
+                .logoutSuccessUrl("/tool/keep-business-receipt/sign-in?signed-out")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll())
+            .authenticationProvider(provider);
+        return http.build();
     }
 
     private static boolean isProd(Environment env) {
