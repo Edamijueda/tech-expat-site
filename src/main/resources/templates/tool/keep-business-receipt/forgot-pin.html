@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Forgot PIN</title>
+    <meta name="description" content="How to recover your PIN for Keep Business Receipt.">
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-end p-3">
+            <a th:href="@{/tool/keep-business-receipt/sign-in}"
+                class="btn btn-outline-dark fw-bold">Back to Sign in</a>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-4">
+            <div class="px-4" style="width: 100%; max-width: 560px;">
+
+                <h1 class="fw-semibold fs-3 mb-3">Forgot your PIN?</h1>
+
+                <p class="mb-3">
+                    To reset your PIN, email us at
+                    <a href="mailto:hello@tech-expat.com?subject=Keep%20Business%20Receipt%20%E2%80%94%20PIN%20reset">
+                        hello@tech-expat.com</a>
+                    from the address you registered with. Mention your business name so we can match
+                    the request to your account.
+                </p>
+
+                <p class="text-muted small mb-0">
+                    We'll confirm the request, then enable PIN reset for your account.
+                </p>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

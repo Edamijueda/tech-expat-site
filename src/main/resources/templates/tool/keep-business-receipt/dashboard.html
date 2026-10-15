@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Dashboard</title>
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-end p-3">
+            <form th:action="@{/tool/keep-business-receipt/sign-out}" method="post" class="m-0">
+                <button type="submit" class="btn btn-outline-dark fw-bold">Sign out</button>
+            </form>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-4">
+            <div class="px-4" style="width: 100%; max-width: 720px;">
+
+                <h1 class="fw-semibold fs-2 mb-3">Dashboard</h1>
+                <p class="text-muted mb-4">
+                    Signed in as <strong th:text="${userEmail}">you</strong>.
+                </p>
+                <p class="text-muted small">
+                    Business name setup and receipt upload arrive in the next phases.
+                </p>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>
