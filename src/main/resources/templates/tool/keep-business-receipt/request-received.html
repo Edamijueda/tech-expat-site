@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Request received</title>
+    <meta name="description"
+        content="Your request for Keep Business Receipt has been received.">
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-end p-3">
+            <a th:href="@{/tool/keep-business-receipt}" class="btn btn-outline-dark fw-bold">Back</a>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-4">
+            <div class="px-4" style="width: 100%; max-width: 560px;">
+
+                <h1 class="fw-semibold fs-3 mb-3">Thanks &mdash; your request is pending</h1>
+
+                <p class="mb-3">
+                    We've received your request. We'll email you shortly from
+                    <strong>hello@tech-expat.com</strong> with a couple of short questions about how
+                    you plan to use the tool.
+                </p>
+
+                <p class="mb-4">
+                    Once your use case is a fit, we'll approve your account and email you so you can
+                    sign in.
+                </p>
+
+                <a th:href="@{/tool/keep-business-receipt}" class="btn btn-dark fw-bold">
+                    Back to overview
+                </a>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>
