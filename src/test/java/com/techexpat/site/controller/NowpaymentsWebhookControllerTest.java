@@ -1,8 +1,11 @@
 package com.techexpat.site.controller;
 
+import com.techexpat.site.config.KbrAuthFailureHandler;
+import com.techexpat.site.config.KbrAuthSuccessHandler;
 import com.techexpat.site.config.PosthogProperties;
 import com.techexpat.site.config.WebSecurityConfig;
 import com.techexpat.site.service.IpnSignatureVerifier;
+import com.techexpat.site.service.KbrUserDetailsService;
 import com.techexpat.site.service.OrderService;
 
 import org.junit.jupiter.api.Test;
@@ -36,6 +39,15 @@ class NowpaymentsWebhookControllerTest {
 
     @MockitoBean
     PosthogProperties posthogProperties;
+
+    @MockitoBean
+    KbrUserDetailsService kbrUserDetailsService;
+
+    @MockitoBean
+    KbrAuthFailureHandler kbrAuthFailureHandler;
+
+    @MockitoBean
+    KbrAuthSuccessHandler kbrAuthSuccessHandler;
 
     private static final String PAID_BODY = """
             {"order_id":"order-123","payment_id":"pay-456","payment_status":"finished"}""";

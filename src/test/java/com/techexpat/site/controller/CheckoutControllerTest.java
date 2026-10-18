@@ -1,10 +1,13 @@
 package com.techexpat.site.controller;
 
+import com.techexpat.site.config.KbrAuthFailureHandler;
+import com.techexpat.site.config.KbrAuthSuccessHandler;
 import com.techexpat.site.config.PosthogProperties;
 import com.techexpat.site.config.WebSecurityConfig;
 import com.techexpat.site.model.Course;
 import com.techexpat.site.model.Order;
 import com.techexpat.site.service.CourseCatalog;
+import com.techexpat.site.service.KbrUserDetailsService;
 import com.techexpat.site.service.NowPaymentsClient;
 import com.techexpat.site.service.NowPaymentsClient.InvoiceResponse;
 import com.techexpat.site.service.OrderService;
@@ -25,6 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -50,6 +54,15 @@ class CheckoutControllerTest {
 
     @MockitoBean
     PosthogProperties posthogProperties;
+
+    @MockitoBean
+    KbrUserDetailsService kbrUserDetailsService;
+
+    @MockitoBean
+    KbrAuthFailureHandler kbrAuthFailureHandler;
+
+    @MockitoBean
+    KbrAuthSuccessHandler kbrAuthSuccessHandler;
 
     private final Course course = new Course("practical-sql", "Practical SQL", new BigDecimal("29.00"));
 
@@ -79,7 +92,7 @@ class CheckoutControllerTest {
         when(nowpayments.createInvoice(any(), any()))
                 .thenReturn(new InvoiceResponse("inv_abc", "https://nowpayments.io/payment/?iid=inv_abc"));
 
-        mockMvc.perform(post("/checkout/practical-sql").param("email", "buyer@example.com"))
+        mockMvc.perform(post("/checkout/practical-sql").with(csrf()).param("email", "buyer@example.com"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("https://nowpayments.io/payment/?iid=inv_abc"));
 
@@ -90,7 +103,7 @@ class CheckoutControllerTest {
     void postInitiateRedirectsBackWhenEmailMissingAtSign() throws Exception {
         when(catalog.findBySlug("practical-sql")).thenReturn(Optional.of(course));
 
-        mockMvc.perform(post("/checkout/practical-sql").param("email", "notanemail"))
+        mockMvc.perform(post("/checkout/practical-sql").with(csrf()).param("email", "notanemail"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/checkout/practical-sql?error=invalid-email"));
     }
@@ -103,7 +116,7 @@ class CheckoutControllerTest {
         when(nowpayments.createInvoice(any(), any()))
                 .thenReturn(new InvoiceResponse("inv_x", "https://nowpayments.io/x"));
 
-        mockMvc.perform(post("/checkout/practical-sql").param("email", "  buyer@example.com  "))
+        mockMvc.perform(post("/checkout/practical-sql").with(csrf()).param("email", "  buyer@example.com  "))
                 .andExpect(status().is3xxRedirection());
 
         ArgumentCaptor<String> email = ArgumentCaptor.forClass(String.class);

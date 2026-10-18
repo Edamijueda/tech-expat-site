@@ -1,7 +1,10 @@
 package com.techexpat.site.controller;
 
+import com.techexpat.site.config.KbrAuthFailureHandler;
+import com.techexpat.site.config.KbrAuthSuccessHandler;
 import com.techexpat.site.config.PosthogProperties;
 import com.techexpat.site.config.WebSecurityConfig;
+import com.techexpat.site.service.KbrUserDetailsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -22,6 +25,15 @@ class HomeControllerTest {
 
     @MockitoBean
     PosthogProperties posthogProperties;
+
+    @MockitoBean
+    KbrUserDetailsService kbrUserDetailsService;
+
+    @MockitoBean
+    KbrAuthFailureHandler kbrAuthFailureHandler;
+
+    @MockitoBean
+    KbrAuthSuccessHandler kbrAuthSuccessHandler;
 
     @Test
     void homePageReturnsOk() throws Exception {
