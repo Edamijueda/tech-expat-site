@@ -1,6 +1,7 @@
 package com.techexpat.site.config;
 
 import com.techexpat.site.controller.HomeController;
+import com.techexpat.site.service.KbrUserDetailsService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,15 @@ class WebSecurityConfigTest {
 
     @MockitoBean
     PosthogProperties posthogProperties;
+
+    @MockitoBean
+    KbrUserDetailsService kbrUserDetailsService;
+
+    @MockitoBean
+    KbrAuthFailureHandler kbrAuthFailureHandler;
+
+    @MockitoBean
+    KbrAuthSuccessHandler kbrAuthSuccessHandler;
 
     @Test
     void adminRouteWithoutCredentialsReturns401() throws Exception {

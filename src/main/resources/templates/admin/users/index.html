@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Admin - KBR Users</title>
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-between align-items-center p-3">
+            <h1 class="fw-semibold fs-3 mb-0">KBR users</h1>
+            <a th:href="@{/}" class="btn btn-outline-dark fw-bold">Back to site</a>
+        </div>
+
+        <section class="flex-grow-1 py-3">
+            <div class="px-3 px-lg-4" style="width: 100%;">
+
+                <div th:if="${flashMessage}" class="alert alert-success" role="alert"
+                    th:text="${flashMessage}">—</div>
+                <div th:if="${flashError}" class="alert alert-danger" role="alert"
+                    th:text="${flashError}">—</div>
+
+                <div th:if="${#lists.isEmpty(users)}" class="alert alert-info" role="alert">
+                    No users yet.
+                </div>
+
+                <div th:unless="${#lists.isEmpty(users)}" class="table-responsive">
+                    <table class="table table-sm table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>Created</th>
+                                <th>Email</th>
+                                <th>Business</th>
+                                <th>Status</th>
+                                <th>Locked</th>
+                                <th>Approved</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${users}">
+                                <td class="small text-muted"
+                                    th:text="${#temporals.format(u.createdAt, 'yyyy-MM-dd HH:mm')}">—</td>
+                                <td class="small" th:text="${u.email}">—</td>
+                                <td class="small" th:text="${u.businessName} ?: '—'">—</td>
+                                <td>
+                                    <span th:switch="${u.status.name()}">
+                                        <span th:case="'PENDING'" class="badge bg-warning text-dark">PENDING</span>
+                                        <span th:case="'APPROVED'" class="badge bg-success">APPROVED</span>
+                                        <span th:case="'SUSPENDED'" class="badge bg-secondary">SUSPENDED</span>
+                                    </span>
+                                </td>
+                                <td class="small">
+                                    <span th:if="${u.lockedUntil != null and u.lockedUntil.isAfter(now)}"
+                                        class="badge bg-danger"
+                                        th:text="'until ' + ${#temporals.format(u.lockedUntil, 'HH:mm')}">—</span>
+                                    <span th:unless="${u.lockedUntil != null and u.lockedUntil.isAfter(now)}"
+                                        class="text-muted">—</span>
+                                </td>
+                                <td class="small text-muted"
+                                    th:text="${u.approvedAt != null} ? ${#temporals.format(u.approvedAt, 'yyyy-MM-dd')} : '—'">—</td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-1 flex-wrap justify-content-end">
+
+                                        <form th:if="${u.status.name() == 'PENDING'}" method="post"
+                                            th:action="@{'/admin/users/' + ${u.id} + '/approve'}"
+                                            class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                        </form>
+
+                                        <form th:if="${u.status.name() == 'APPROVED'}" method="post"
+                                            th:action="@{'/admin/users/' + ${u.id} + '/suspend'}"
+                                            class="d-inline"
+                                            onsubmit="return confirm('Suspend this user?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary">Suspend</button>
+                                        </form>
+
+                                        <form th:if="${u.status.name() == 'SUSPENDED'}" method="post"
+                                            th:action="@{'/admin/users/' + ${u.id} + '/unsuspend'}"
+                                            class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-success">Reinstate</button>
+                                        </form>
+
+                                        <form th:if="${u.lockedUntil != null and u.lockedUntil.isAfter(now)}"
+                                            method="post"
+                                            th:action="@{'/admin/users/' + ${u.id} + '/unlock'}"
+                                            class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-dark">Unlock</button>
+                                        </form>
+
+                                        <a th:href="@{'/admin/users/' + ${u.id} + '/lockouts'}"
+                                            class="btn btn-sm btn-outline-dark">History</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

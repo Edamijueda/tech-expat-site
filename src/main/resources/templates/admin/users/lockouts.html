@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Admin - Lockout history</title>
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-between align-items-center p-3">
+            <h1 class="fw-semibold fs-3 mb-0">Lockout history</h1>
+            <a th:href="@{/admin/users}" class="btn btn-outline-dark fw-bold">Back to users</a>
+        </div>
+
+        <section class="flex-grow-1 py-3">
+            <div class="px-3 px-lg-4" style="width: 100%;">
+
+                <div th:if="${flashMessage}" class="alert alert-success" role="alert"
+                    th:text="${flashMessage}">—</div>
+
+                <div class="mb-4">
+                    <div class="small text-muted">User</div>
+                    <div class="fw-bold" th:text="${user.email}">—</div>
+                    <div class="small">
+                        Status: <span th:text="${user.status}">—</span>
+                        <span th:if="${user.lockedUntil != null and user.lockedUntil.isAfter(now)}">
+                            &middot; Currently locked until
+                            <span th:text="${#temporals.format(user.lockedUntil, 'yyyy-MM-dd HH:mm')}">—</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(events)}" class="alert alert-info" role="alert">
+                    No lockout events recorded.
+                </div>
+
+                <div th:unless="${#lists.isEmpty(events)}">
+
+                    <div class="d-flex justify-content-end mb-3">
+                        <form method="post"
+                            th:action="@{'/admin/users/' + ${user.id} + '/lockouts/clear'}"
+                            onsubmit="return confirm('Clear ALL lockout events for this user?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Clear all</button>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Locked at</th>
+                                    <th class="text-end">Attempts</th>
+                                    <th>IP address</th>
+                                    <th>User agent</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="e : ${events}">
+                                    <td class="small text-muted"
+                                        th:text="${#temporals.format(e.lockedAt, 'yyyy-MM-dd HH:mm:ss')}">—</td>
+                                    <td class="text-end" th:text="${e.failedAttemptCount}">—</td>
+                                    <td class="small font-monospace" th:text="${e.ipAddress} ?: '—'">—</td>
+                                    <td class="small text-muted text-break"
+                                        style="max-width: 420px;"
+                                        th:text="${e.userAgent} ?: '—'">—</td>
+                                    <td class="text-end">
+                                        <form method="post"
+                                            th:action="@{'/admin/users/' + ${user.id} + '/lockouts/' + ${e.id} + '/delete'}"
+                                            onsubmit="return confirm('Delete this lockout event?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

@@ -98,6 +98,7 @@ public class WebSecurityConfig {
                     "/tool/keep-business-receipt/files/**"
                 ).hasRole("KBR_USER")
                 .anyRequest().permitAll())
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/webhooks/**"))
             .formLogin(form -> form
                 .loginPage("/tool/keep-business-receipt/sign-in")
                 .loginProcessingUrl("/tool/keep-business-receipt/sign-in")

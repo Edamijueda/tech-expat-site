@@ -1,10 +1,13 @@
 package com.techexpat.site.controller;
 
+import com.techexpat.site.config.KbrAuthFailureHandler;
+import com.techexpat.site.config.KbrAuthSuccessHandler;
 import com.techexpat.site.config.PosthogProperties;
 import com.techexpat.site.config.WebSecurityConfig;
 import com.techexpat.site.model.Course;
 import com.techexpat.site.model.Order;
 import com.techexpat.site.service.CourseCatalog;
+import com.techexpat.site.service.KbrUserDetailsService;
 import com.techexpat.site.service.OrderService;
 
 import org.junit.jupiter.api.Test;
@@ -40,6 +43,15 @@ class AdminControllerTest {
 
     @MockitoBean
     PosthogProperties posthogProperties;
+
+    @MockitoBean
+    KbrUserDetailsService kbrUserDetailsService;
+
+    @MockitoBean
+    KbrAuthFailureHandler kbrAuthFailureHandler;
+
+    @MockitoBean
+    KbrAuthSuccessHandler kbrAuthSuccessHandler;
 
     @Test
     void listOrdersWithoutAuthReturns401() throws Exception {
