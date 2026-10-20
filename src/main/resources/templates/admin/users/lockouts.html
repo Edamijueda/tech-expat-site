@@ -30,7 +30,7 @@
                         Status: <span th:text="${user.status}">—</span>
                         <span th:if="${user.lockedUntil != null and user.lockedUntil.isAfter(now)}">
                             &middot; Currently locked until
-                            <span th:text="${#temporals.format(user.lockedUntil, 'yyyy-MM-dd HH:mm')}">—</span>
+                            <span th:text="${@displayTime.dateTime(user.lockedUntil)}">—</span>
                         </span>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                             <tbody>
                                 <tr th:each="e : ${events}">
                                     <td class="small text-muted"
-                                        th:text="${#temporals.format(e.lockedAt, 'yyyy-MM-dd HH:mm:ss')}">—</td>
+                                        th:text="${@displayTime.dateTimeSeconds(e.lockedAt)}">—</td>
                                     <td class="text-end" th:text="${e.failedAttemptCount}">—</td>
                                     <td class="small font-monospace" th:text="${e.ipAddress} ?: '—'">—</td>
                                     <td class="small text-muted text-break"

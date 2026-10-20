@@ -8,6 +8,7 @@ import com.techexpat.site.model.KbrUser;
 import com.techexpat.site.model.KbrUserLockoutEvent;
 import com.techexpat.site.model.KbrUserStatus;
 import com.techexpat.site.repository.KbrUserLockoutEventRepository;
+import com.techexpat.site.service.DisplayTime;
 import com.techexpat.site.service.KbrUserDetailsService;
 import com.techexpat.site.service.KbrUserService;
 
@@ -59,6 +60,9 @@ class AdminKbrUsersControllerTest {
 
     @MockitoBean
     KbrAuthSuccessHandler kbrAuthSuccessHandler;
+
+    @MockitoBean(name = "displayTime")
+    DisplayTime displayTime;
 
     @Test
     void listRequiresAuth() throws Exception {

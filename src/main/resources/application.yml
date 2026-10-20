@@ -1,6 +1,10 @@
 spring:
   application:
     name: TechExpat Site
+  servlet:
+    multipart:
+      max-file-size: 9MB # just above receipts.max-bytes so our own message handles the 8 MB case
+      max-request-size: 10MB
 
 info:
   app:
@@ -27,3 +31,13 @@ nowpayments:
 admin:
   username: ${ADMIN_USERNAME:}
   password: ${ADMIN_PASSWORD:}
+
+receipts:
+  supabase-url: ${SUPABASE_URL:}
+  service-role-key: ${SUPABASE_SERVICE_ROLE_KEY:}
+  bucket: ${TE_KBR_STORAGE_BUCKET:}
+  max-bytes: 8388608 # 8 MB: a 12 MP phone photo often lands at 2-5 MB, so 5 MB was tight
+
+display:
+  # Never the server's zone: Railway runs UTC, which would show dates a day early after midnight.
+  zone: ${DISPLAY_ZONE:Africa/Lagos}

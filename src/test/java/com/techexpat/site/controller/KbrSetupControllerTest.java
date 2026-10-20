@@ -6,8 +6,10 @@ import com.techexpat.site.config.KbrWebMvcConfig;
 import com.techexpat.site.config.PosthogProperties;
 import com.techexpat.site.config.WebSecurityConfig;
 import com.techexpat.site.model.KbrUser;
+import com.techexpat.site.service.DisplayTime;
 import com.techexpat.site.service.KbrUserDetailsService;
 import com.techexpat.site.service.KbrUserService;
+import com.techexpat.site.service.ReceiptService;
 import com.techexpat.site.service.RegistrationRateLimiter;
 
 import org.junit.jupiter.api.Test;
@@ -47,6 +49,12 @@ class KbrSetupControllerTest {
 
     @MockitoBean
     RegistrationRateLimiter rateLimiter;
+
+    @MockitoBean
+    ReceiptService receiptService;
+
+    @MockitoBean(name = "displayTime")
+    DisplayTime displayTime;
 
     @MockitoBean
     PosthogProperties posthogProperties;

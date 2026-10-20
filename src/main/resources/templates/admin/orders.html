@@ -41,7 +41,7 @@
                         <tbody>
                             <tr th:each="order : ${orders}">
                                 <td class="small text-muted"
-                                    th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}">—</td>
+                                    th:text="${@displayTime.dateTime(order.createdAt)}">—</td>
                                 <td class="small font-monospace" th:text="${order.id}">—</td>
                                 <td th:text="${order.courseSlug}">—</td>
                                 <td class="small" th:text="${order.buyerEmail}">—</td>
