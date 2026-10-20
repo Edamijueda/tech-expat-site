@@ -7,6 +7,7 @@ import com.techexpat.site.config.WebSecurityConfig;
 import com.techexpat.site.model.Post;
 import com.techexpat.site.model.Section;
 import com.techexpat.site.service.KbrUserDetailsService;
+import com.techexpat.site.service.KbrUserService;
 import com.techexpat.site.service.PostService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,9 @@ class PostControllerTest {
 
     @MockitoBean
     KbrAuthSuccessHandler kbrAuthSuccessHandler;
+
+    @MockitoBean
+    KbrUserService kbrUserService;
 
     private static final Post SAMPLE = new Post(
             "known", 1, "Known Post", "Tobi Omorubore",

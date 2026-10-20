@@ -1,5 +1,6 @@
 package com.techexpat.site.controller;
 
+import com.techexpat.site.model.KbrUser;
 import com.techexpat.site.service.KbrUserService;
 import com.techexpat.site.service.RegistrationRateLimiter;
 
@@ -52,7 +53,41 @@ public class KbrAuthController {
     @GetMapping("/dashboard")
     public String dashboard(Authentication authentication, Model model) {
         model.addAttribute("userEmail", authentication.getName());
+        model.addAttribute("businessName", userService.findByEmail(authentication.getName())
+                .map(KbrUser::getBusinessName)
+                .orElse(null));
         return "tool/keep-business-receipt/dashboard";
+    }
+
+    @GetMapping("/setup")
+    public String setupForm(Authentication authentication, Model model) {
+        if (userService.hasBusinessName(authentication.getName())) {
+            return "redirect:/tool/keep-business-receipt/dashboard";
+        }
+        if (!model.containsAttribute("form")) {
+            model.addAttribute("form", new SetupForm(""));
+        }
+        return "tool/keep-business-receipt/setup";
+    }
+
+    @PostMapping("/setup")
+    public String submitSetup(@ModelAttribute("form") SetupForm form,
+                              Authentication authentication,
+                              Model model) {
+        if (userService.hasBusinessName(authentication.getName())) {
+            return "redirect:/tool/keep-business-receipt/dashboard";
+        }
+
+        String businessName = form.businessName() == null ? "" : form.businessName().trim();
+        if (businessName.length() < 2 || businessName.length() > 255) {
+            model.addAttribute("form", form);
+            model.addAttribute("errors",
+                    List.of("Business name must be between 2 and 255 characters."));
+            return "tool/keep-business-receipt/setup";
+        }
+
+        userService.saveBusinessName(authentication.getName(), businessName);
+        return "redirect:/tool/keep-business-receipt/dashboard";
     }
 
     @GetMapping("/forgot-pin")
@@ -109,6 +144,9 @@ public class KbrAuthController {
             errs.add("The two PINs don't match.");
         }
         return errs;
+    }
+
+    public record SetupForm(String businessName) {
     }
 
     public record RequestAccessForm(String email, String pin, String pinConfirm) {

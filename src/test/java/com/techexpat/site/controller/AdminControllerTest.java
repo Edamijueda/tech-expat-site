@@ -8,6 +8,7 @@ import com.techexpat.site.model.Course;
 import com.techexpat.site.model.Order;
 import com.techexpat.site.service.CourseCatalog;
 import com.techexpat.site.service.KbrUserDetailsService;
+import com.techexpat.site.service.KbrUserService;
 import com.techexpat.site.service.OrderService;
 
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,9 @@ class AdminControllerTest {
 
     @MockitoBean
     KbrAuthSuccessHandler kbrAuthSuccessHandler;
+
+    @MockitoBean
+    KbrUserService kbrUserService;
 
     @Test
     void listOrdersWithoutAuthReturns401() throws Exception {
