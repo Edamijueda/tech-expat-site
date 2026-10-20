@@ -45,7 +45,7 @@
                         <tbody>
                             <tr th:each="u : ${users}">
                                 <td class="small text-muted"
-                                    th:text="${#temporals.format(u.createdAt, 'yyyy-MM-dd HH:mm')}">—</td>
+                                    th:text="${@displayTime.dateTime(u.createdAt)}">—</td>
                                 <td class="small" th:text="${u.email}">—</td>
                                 <td class="small" th:text="${u.businessName} ?: '—'">—</td>
                                 <td>
@@ -58,12 +58,12 @@
                                 <td class="small">
                                     <span th:if="${u.lockedUntil != null and u.lockedUntil.isAfter(now)}"
                                         class="badge bg-danger"
-                                        th:text="'until ' + ${#temporals.format(u.lockedUntil, 'HH:mm')}">—</span>
+                                        th:text="'until ' + ${@displayTime.time(u.lockedUntil)}">—</span>
                                     <span th:unless="${u.lockedUntil != null and u.lockedUntil.isAfter(now)}"
                                         class="text-muted">—</span>
                                 </td>
                                 <td class="small text-muted"
-                                    th:text="${u.approvedAt != null} ? ${#temporals.format(u.approvedAt, 'yyyy-MM-dd')} : '—'">—</td>
+                                    th:text="${@displayTime.date(u.approvedAt)}">—</td>
                                 <td class="text-end">
                                     <div class="d-inline-flex gap-1 flex-wrap justify-content-end">
 

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Delete receipt</title>
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-4">
+            <div class="px-4" style="width: 100%; max-width: 480px;">
+
+                <h1 class="fw-semibold fs-3 mb-3">Delete this receipt?</h1>
+
+                <p class="mb-1 fw-semibold text-break" th:text="${receipt.description}">Description</p>
+                <p class="text-muted small mb-4"
+                    th:text="${@displayTime.day(receipt.uploadedAt)}">Date</p>
+
+                <p class="text-muted small mb-4">The file is removed for good.</p>
+
+                <form method="post"
+                    th:action="@{/tool/keep-business-receipt/receipts/{id}/delete(id=${receipt.id})}">
+                    <button type="submit" class="btn btn-danger fw-bold w-100 mb-2">Delete</button>
+                </form>
+
+                <a th:href="@{/tool/keep-business-receipt/dashboard}"
+                    class="btn btn-outline-dark fw-bold w-100">Keep it</a>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

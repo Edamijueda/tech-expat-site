@@ -60,7 +60,7 @@
                                 th:text="${order.nowpaymentsPaymentId} ?: '—'">—</dd>
                             <dt class="col-4">Created</dt>
                             <dd class="col-8 small text-muted"
-                                th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">—</dd>
+                                th:text="${@displayTime.dateTimeSeconds(order.createdAt)}">—</dd>
                         </dl>
                     </div>
                 </div>

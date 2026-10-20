@@ -22,12 +22,71 @@
             <div class="px-4" style="width: 100%; max-width: 720px;">
 
                 <h1 class="fw-semibold fs-2 mb-1" th:text="${businessName}">Dashboard</h1>
-                <p class="text-muted mb-4">
-                    Signed in as <strong th:text="${userEmail}">you</strong>.
+                <p class="text-muted small mb-4">
+                    Signed in as <span th:text="${userEmail}">you</span>.
                 </p>
-                <p class="text-muted small">
-                    Receipt upload arrives in the next phase.
+
+                <div th:if="${errorMessage}" class="alert alert-danger" role="alert"
+                    th:text="${errorMessage}">Error.</div>
+                <div th:if="${infoMessage}" class="alert alert-info" role="alert"
+                    th:text="${infoMessage}">Info.</div>
+
+                <form th:action="@{/tool/keep-business-receipt/receipts}" method="post"
+                    enctype="multipart/form-data" class="border rounded p-3 mb-4" novalidate>
+
+                    <div class="mb-3">
+                        <label for="file" class="form-label fw-bold">Receipt</label>
+                        <input type="file" id="file" name="file" class="form-control" required
+                            accept="image/jpeg,image/png,image/heic,application/pdf"
+                            capture="environment">
+                        <div class="form-text">Photo or PDF, up to 8 MB.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-bold">Description</label>
+                        <input type="text" id="description" name="description" class="form-control"
+                            required maxlength="500" th:value="${description}">
+                        <div class="form-text">A few words to help you find it later.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark fw-bold w-100">Keep receipt</button>
+                </form>
+
+                <p th:if="${#lists.isEmpty(receipts)}" class="text-muted small">
+                    Nothing kept yet.
                 </p>
+
+                <ul class="list-unstyled m-0" th:unless="${#lists.isEmpty(receipts)}">
+                    <li th:each="receipt : ${receipts}"
+                        class="border-bottom py-3 d-flex align-items-start gap-3">
+
+                        <span class="fs-4" aria-hidden="true"
+                            th:text="${receipt.pdf} ? '📄' : '🧾'">🧾</span>
+
+                        <div class="flex-grow-1" style="min-width: 0;">
+                            <div class="fw-semibold text-break" th:text="${receipt.description}">
+                                Description
+                            </div>
+                            <div class="text-muted small"
+                                th:text="${@displayTime.day(receipt.uploadedAt)}">
+                                Date
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 flex-shrink-0">
+                            <a class="btn btn-sm btn-outline-dark" target="_blank"
+                                th:href="@{/tool/keep-business-receipt/files/{id}(id=${receipt.id})}"
+                                th:title="'Preview ' + ${receipt.description}">View</a>
+                            <a class="btn btn-sm btn-outline-dark"
+                                th:href="@{/tool/keep-business-receipt/files/{id}/download(id=${receipt.id})}"
+                                th:title="'Download ' + ${receipt.description}">Save</a>
+                            <a class="btn btn-sm btn-outline-danger"
+                                th:href="@{/tool/keep-business-receipt/receipts/{id}/delete(id=${receipt.id})}"
+                                th:title="'Delete ' + ${receipt.description}">Delete</a>
+                        </div>
+
+                    </li>
+                </ul>
 
             </div>
         </section>
