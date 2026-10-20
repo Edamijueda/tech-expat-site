@@ -8,6 +8,7 @@ import com.techexpat.site.model.Course;
 import com.techexpat.site.model.Order;
 import com.techexpat.site.service.CourseCatalog;
 import com.techexpat.site.service.KbrUserDetailsService;
+import com.techexpat.site.service.KbrUserService;
 import com.techexpat.site.service.NowPaymentsClient;
 import com.techexpat.site.service.NowPaymentsClient.InvoiceResponse;
 import com.techexpat.site.service.OrderService;
@@ -63,6 +64,9 @@ class CheckoutControllerTest {
 
     @MockitoBean
     KbrAuthSuccessHandler kbrAuthSuccessHandler;
+
+    @MockitoBean
+    KbrUserService kbrUserService;
 
     private final Course course = new Course("practical-sql", "Practical SQL", new BigDecimal("29.00"));
 

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Business name</title>
+    <meta name="description" content="Name your business to finish setting up Keep Business Receipt.">
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-end p-3">
+            <form th:action="@{/tool/keep-business-receipt/sign-out}" method="post" class="m-0">
+                <button type="submit" class="btn btn-outline-dark fw-bold">Sign out</button>
+            </form>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-4">
+            <div class="px-4" style="width: 100%; max-width: 480px;">
+
+                <h1 class="fw-semibold fs-3 mb-3">One last thing</h1>
+                <p class="text-muted small mb-4">
+                    What's the name of your business? It'll head your receipts list.
+                </p>
+
+                <div th:if="${errors}" class="alert alert-danger" role="alert">
+                    <ul class="mb-0 ps-3">
+                        <li th:each="e : ${errors}" th:text="${e}"></li>
+                    </ul>
+                </div>
+
+                <form th:action="@{/tool/keep-business-receipt/setup}" method="post"
+                    th:object="${form}" novalidate>
+
+                    <div class="mb-3">
+                        <label for="businessName" class="form-label fw-bold">Business name</label>
+                        <input type="text" id="businessName" th:field="*{businessName}"
+                            class="form-control" required maxlength="255" minlength="2"
+                            autocomplete="organization" autofocus>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark fw-bold w-100">Continue</button>
+                </form>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

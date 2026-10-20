@@ -31,7 +31,7 @@ public class KbrUserService {
 
     @Transactional
     public boolean createPendingUser(String email, String pin) {
-        String normalized = email.trim().toLowerCase();
+        String normalized = normalize(email);
         if (users.existsByEmail(normalized)) {
             return false;
         }
@@ -45,6 +45,24 @@ public class KbrUserService {
 
     public List<KbrUser> findAllNewestFirst() {
         return users.findAllByOrderByCreatedAtDesc();
+    }
+
+    public Optional<KbrUser> findByEmail(String email) {
+        return users.findByEmail(normalize(email));
+    }
+
+    public boolean hasBusinessName(String email) {
+        return findByEmail(email)
+                .map(user -> user.getBusinessName() != null && !user.getBusinessName().isBlank())
+                .orElse(false);
+    }
+
+    @Transactional
+    public boolean saveBusinessName(String email, String businessName) {
+        return users.findByEmail(normalize(email)).map(user -> {
+            user.setBusinessName(businessName.trim());
+            return true;
+        }).orElse(false);
     }
 
     public Optional<KbrUser> findById(String id) {
@@ -102,5 +120,9 @@ public class KbrUserService {
     @Transactional
     public void deleteLockoutEvent(String eventId) {
         lockoutEvents.deleteById(eventId);
+    }
+
+    private static String normalize(String email) {
+        return email == null ? "" : email.trim().toLowerCase();
     }
 }
