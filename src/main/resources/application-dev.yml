@@ -39,3 +39,5 @@ logging:
   level:
     com.techexpat: DEBUG
     web: DEBUG
+    # Prints the JDBC URL at INFO, password and all. Prod is already silent (root: WARN).
+    org.hibernate.orm.connections.pooling: WARN
