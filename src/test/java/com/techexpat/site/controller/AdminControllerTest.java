@@ -8,6 +8,7 @@ import com.techexpat.site.model.Course;
 import com.techexpat.site.model.Order;
 import com.techexpat.site.service.CourseCatalog;
 import com.techexpat.site.service.DisplayTime;
+import com.techexpat.site.service.KbrSubscriptionService;
 import com.techexpat.site.service.KbrUserDetailsService;
 import com.techexpat.site.service.KbrUserService;
 import com.techexpat.site.service.OrderService;
@@ -57,6 +58,9 @@ class AdminControllerTest {
 
     @MockitoBean
     KbrUserService kbrUserService;
+
+    @MockitoBean
+    KbrSubscriptionService kbrSubscriptionService;
 
     @MockitoBean(name = "displayTime")
     DisplayTime displayTime;

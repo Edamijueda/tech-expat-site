@@ -19,13 +19,16 @@ public class KbrUserService {
 
     private final KbrUserRepository users;
     private final KbrUserLockoutEventRepository lockoutEvents;
+    private final KbrSubscriptionService subscriptions;
     private final PasswordEncoder encoder;
 
     public KbrUserService(KbrUserRepository users,
                           KbrUserLockoutEventRepository lockoutEvents,
+                          KbrSubscriptionService subscriptions,
                           PasswordEncoder encoder) {
         this.users = users;
         this.lockoutEvents = lockoutEvents;
+        this.subscriptions = subscriptions;
         this.encoder = encoder;
     }
 
@@ -73,11 +76,32 @@ public class KbrUserService {
     public boolean approve(String id) {
         return users.findById(id).map(user -> {
             if (user.getStatus() == KbrUserStatus.PENDING) {
+                Instant now = Instant.now();
                 user.setStatus(KbrUserStatus.APPROVED);
-                user.setApprovedAt(Instant.now());
+                user.setApprovedAt(now);
+                // Approval is what starts the free trial; nothing runs before it.
+                user.setTrialStartedAt(now);
+                user.setTrialDays(KbrUser.FIRST_TRIAL_DAYS);
                 return true;
             }
             return false;
+        }).orElse(false);
+    }
+
+    /**
+     * Grants the single trial extension. Offered only once the first trial has run out,
+     * so the decision is made after seeing how the account was used.
+     */
+    @Transactional
+    public boolean extendTrial(String id) {
+        return users.findById(id).map(user -> {
+            if (user.getTrialStartedAt() == null || user.isTrialExtended()
+                    || subscriptions.statusFor(user).trialActive()) {
+                return false;
+            }
+            user.setTrialDays(user.getTrialDays() + KbrUser.TRIAL_EXTENSION_DAYS);
+            user.setTrialExtendedAt(Instant.now());
+            return true;
         }).orElse(false);
     }
 

@@ -7,6 +7,8 @@ import com.techexpat.site.config.PosthogProperties;
 import com.techexpat.site.config.WebSecurityConfig;
 import com.techexpat.site.model.KbrUser;
 import com.techexpat.site.service.DisplayTime;
+import com.techexpat.site.service.KbrAccessStatus;
+import com.techexpat.site.service.KbrSubscriptionService;
 import com.techexpat.site.service.KbrUserDetailsService;
 import com.techexpat.site.service.KbrUserService;
 import com.techexpat.site.service.ReceiptService;
@@ -21,6 +23,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +33,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,6 +52,9 @@ class KbrSetupControllerTest {
 
     @MockitoBean
     KbrUserService userService;
+
+    @MockitoBean
+    KbrSubscriptionService subscriptions;
 
     @MockitoBean
     RegistrationRateLimiter rateLimiter;
@@ -82,6 +91,33 @@ class KbrSetupControllerTest {
         mockMvc.perform(get(DASHBOARD).with(kbrUser()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl(SETUP));
+    }
+
+    @Test
+    void dashboardShowsTheTrialCounter() throws Exception {
+        when(userService.hasBusinessName(EMAIL)).thenReturn(true);
+        when(userService.findByEmail(EMAIL)).thenReturn(Optional.of(userWithBusinessName()));
+        when(subscriptions.statusFor(any()))
+                .thenReturn(new KbrAccessStatus(true, 4, 30, 27, null));
+
+        mockMvc.perform(get(DASHBOARD).with(kbrUser()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("4/30")))
+                .andExpect(content().string(containsString("name=\"file\"")));
+    }
+
+    /** Past the trial the dashboard still renders — it just stops offering the form. */
+    @Test
+    void readOnlyDashboardOffersTheSubscriptionEmailInsteadOfTheUploadForm() throws Exception {
+        when(userService.hasBusinessName(EMAIL)).thenReturn(true);
+        when(userService.findByEmail(EMAIL)).thenReturn(Optional.of(userWithBusinessName()));
+        when(subscriptions.statusFor(any()))
+                .thenReturn(new KbrAccessStatus(true, 31, 30, 0, null));
+
+        mockMvc.perform(get(DASHBOARD).with(kbrUser()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("hello@tech-expat.com")))
+                .andExpect(content().string(not(containsString("name=\"file\""))));
     }
 
     @Test

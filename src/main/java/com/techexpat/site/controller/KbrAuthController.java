@@ -1,5 +1,6 @@
 package com.techexpat.site.controller;
 
+import com.techexpat.site.service.KbrSubscriptionService;
 import com.techexpat.site.service.KbrUserService;
 import com.techexpat.site.service.ReceiptService;
 import com.techexpat.site.service.RegistrationRateLimiter;
@@ -25,12 +26,15 @@ public class KbrAuthController {
     private final KbrUserService userService;
     private final RegistrationRateLimiter rateLimiter;
     private final ReceiptService receiptService;
+    private final KbrSubscriptionService subscriptions;
 
     public KbrAuthController(KbrUserService userService, RegistrationRateLimiter rateLimiter,
-                             ReceiptService receiptService) {
+                             ReceiptService receiptService,
+                             KbrSubscriptionService subscriptions) {
         this.userService = userService;
         this.rateLimiter = rateLimiter;
         this.receiptService = receiptService;
+        this.subscriptions = subscriptions;
     }
 
     @GetMapping("/sign-in")
@@ -59,6 +63,7 @@ public class KbrAuthController {
         userService.findByEmail(authentication.getName()).ifPresent(user -> {
             model.addAttribute("businessName", user.getBusinessName());
             model.addAttribute("receipts", receiptService.listFor(user.getId()));
+            model.addAttribute("access", subscriptions.statusFor(user));
         });
         return "tool/keep-business-receipt/dashboard";
     }

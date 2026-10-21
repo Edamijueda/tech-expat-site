@@ -6,6 +6,7 @@ import com.techexpat.site.config.PosthogProperties;
 import com.techexpat.site.config.WebSecurityConfig;
 import com.techexpat.site.model.Post;
 import com.techexpat.site.model.Section;
+import com.techexpat.site.service.KbrSubscriptionService;
 import com.techexpat.site.service.KbrUserDetailsService;
 import com.techexpat.site.service.KbrUserService;
 import com.techexpat.site.service.PostService;
@@ -51,6 +52,9 @@ class PostControllerTest {
 
     @MockitoBean
     KbrUserService kbrUserService;
+
+    @MockitoBean
+    KbrSubscriptionService kbrSubscriptionService;
 
     private static final Post SAMPLE = new Post(
             "known", 1, "Known Post", "Tobi Omorubore",

@@ -5,6 +5,7 @@ import com.techexpat.site.config.DisplayProperties;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -42,6 +43,23 @@ public class DisplayTime {
     /** "7 Oct 2026" — for pages end users read. */
     public String day(Instant instant) {
         return format(day, instant);
+    }
+
+    /** Today in the display zone, so day counts turn over at local midnight. */
+    public LocalDate today() {
+        return LocalDate.now(zone);
+    }
+
+    public LocalDate toLocalDate(Instant instant) {
+        return instant == null ? null : LocalDate.ofInstant(instant, zone);
+    }
+
+    /**
+     * "7 Oct 2026" for a value that is already a calendar day. Not an overload of
+     * {@link #day(Instant)}: a null argument would be ambiguous between the two.
+     */
+    public String dayOf(LocalDate date) {
+        return date == null ? "—" : day.format(date);
     }
 
     public String date(Instant instant) {
