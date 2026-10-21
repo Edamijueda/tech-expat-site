@@ -14,6 +14,12 @@ import java.time.Instant;
 @Table(name = "te_kbr_users")
 public class KbrUser {
 
+    /** Length of the first free trial, in days. The clock starts when the admin approves. */
+    public static final int FIRST_TRIAL_DAYS = 30;
+
+    /** Days added by the single extension an admin may grant, taking the cap to 60. */
+    public static final int TRIAL_EXTENSION_DAYS = 30;
+
     @Id
     @Column(name = "id", length = 36)
     private String id;
@@ -37,6 +43,15 @@ public class KbrUser {
     @Column(name = "approved_at")
     private Instant approvedAt;
 
+    @Column(name = "trial_started_at")
+    private Instant trialStartedAt;
+
+    @Column(name = "trial_days", nullable = false)
+    private int trialDays;
+
+    @Column(name = "trial_extended_at")
+    private Instant trialExtendedAt;
+
     @Column(name = "failed_login_attempts", nullable = false)
     private int failedLoginAttempts;
 
@@ -52,6 +67,7 @@ public class KbrUser {
         this.pinHash = pinHash;
         this.status = KbrUserStatus.PENDING;
         this.failedLoginAttempts = 0;
+        this.trialDays = FIRST_TRIAL_DAYS;
     }
 
     @PrePersist
@@ -103,6 +119,34 @@ public class KbrUser {
 
     public void setApprovedAt(Instant approvedAt) {
         this.approvedAt = approvedAt;
+    }
+
+    public Instant getTrialStartedAt() {
+        return trialStartedAt;
+    }
+
+    public void setTrialStartedAt(Instant trialStartedAt) {
+        this.trialStartedAt = trialStartedAt;
+    }
+
+    public int getTrialDays() {
+        return trialDays;
+    }
+
+    public void setTrialDays(int trialDays) {
+        this.trialDays = trialDays;
+    }
+
+    public Instant getTrialExtendedAt() {
+        return trialExtendedAt;
+    }
+
+    public void setTrialExtendedAt(Instant trialExtendedAt) {
+        this.trialExtendedAt = trialExtendedAt;
+    }
+
+    public boolean isTrialExtended() {
+        return trialExtendedAt != null;
     }
 
     public int getFailedLoginAttempts() {

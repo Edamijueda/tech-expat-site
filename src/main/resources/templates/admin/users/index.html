@@ -37,6 +37,8 @@
                                 <th>Email</th>
                                 <th>Business</th>
                                 <th>Status</th>
+                                <th>Trial</th>
+                                <th>Paid through</th>
                                 <th>Locked</th>
                                 <th>Approved</th>
                                 <th class="text-end">Actions</th>
@@ -55,6 +57,15 @@
                                         <span th:case="'SUSPENDED'" class="badge bg-secondary">SUSPENDED</span>
                                     </span>
                                 </td>
+                                <td class="small" th:with="a=${access.get(u.id)}">
+                                    <span th:if="${!a.trialStarted()}" class="text-muted">—</span>
+                                    <span th:if="${a.trialActive()}"
+                                        th:text="${a.trialDaysShown()} + '/' + ${a.trialDays()}">4/30</span>
+                                    <span th:if="${a.trialStarted() and !a.trialActive()}"
+                                        class="badge bg-secondary">expired</span>
+                                </td>
+                                <td class="small text-muted" th:with="a=${access.get(u.id)}"
+                                    th:text="${a.paid()} ? ${@displayTime.dayOf(a.paidThrough())} : '—'">—</td>
                                 <td class="small">
                                     <span th:if="${u.lockedUntil != null and u.lockedUntil.isAfter(now)}"
                                         class="badge bg-danger"
@@ -64,7 +75,7 @@
                                 </td>
                                 <td class="small text-muted"
                                     th:text="${@displayTime.date(u.approvedAt)}">—</td>
-                                <td class="text-end">
+                                <td class="text-end" th:with="a=${access.get(u.id)}">
                                     <div class="d-inline-flex gap-1 flex-wrap justify-content-end">
 
                                         <form th:if="${u.status.name() == 'PENDING'}" method="post"
@@ -92,6 +103,18 @@
                                             class="d-inline">
                                             <button type="submit" class="btn btn-sm btn-outline-dark">Unlock</button>
                                         </form>
+
+                                        <form th:if="${a.trialStarted() and !a.trialActive() and !u.trialExtended}"
+                                            method="post"
+                                            th:action="@{'/admin/users/' + ${u.id} + '/extend-trial'}"
+                                            class="d-inline"
+                                            onsubmit="return confirm('Extend this trial by 30 days? This can only be done once.');">
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">Extend trial</button>
+                                        </form>
+
+                                        <a th:if="${u.status.name() != 'PENDING'}"
+                                            th:href="@{'/admin/users/' + ${u.id} + '/subscription'}"
+                                            class="btn btn-sm btn-outline-dark">Subscription</a>
 
                                         <a th:href="@{'/admin/users/' + ${u.id} + '/lockouts'}"
                                             class="btn btn-sm btn-outline-dark">History</a>

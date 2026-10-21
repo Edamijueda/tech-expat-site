@@ -2,6 +2,7 @@ package com.techexpat.site.config;
 
 import com.techexpat.site.controller.KbrAuthController;
 import com.techexpat.site.service.DisplayTime;
+import com.techexpat.site.service.KbrSubscriptionService;
 import com.techexpat.site.service.KbrUserDetailsService;
 import com.techexpat.site.service.KbrUserService;
 import com.techexpat.site.service.ReceiptService;
@@ -41,6 +42,9 @@ class KbrRememberMeTest {
 
     @MockitoBean
     KbrUserService userService;
+
+    @MockitoBean
+    KbrSubscriptionService subscriptions;
 
     @MockitoBean
     RegistrationRateLimiter rateLimiter;

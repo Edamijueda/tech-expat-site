@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Admin - Subscription</title>
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-between align-items-center p-3">
+            <h1 class="fw-semibold fs-3 mb-0">Subscription</h1>
+            <a th:href="@{/admin/users}" class="btn btn-outline-dark fw-bold">Back to users</a>
+        </div>
+
+        <section class="flex-grow-1 py-3">
+            <div class="px-3 px-lg-4" style="width: 100%;">
+
+                <div th:if="${flashMessage}" class="alert alert-success" role="alert"
+                    th:text="${flashMessage}">—</div>
+                <div th:if="${flashError}" class="alert alert-danger" role="alert"
+                    th:text="${flashError}">—</div>
+
+                <div class="mb-4">
+                    <div class="small text-muted">User</div>
+                    <div class="fw-bold" th:text="${user.email}">—</div>
+                    <div class="small">
+                        <span th:if="${access.trialActive()}">
+                            Trial
+                            <span th:text="${access.trialDaysShown()} + '/' + ${access.trialDays()}">4/30</span>
+                            &middot;
+                            <span th:text="${access.trialDaysRemaining()}">26</span> days left
+                        </span>
+                        <span th:if="${access.trialStarted() and !access.trialActive()}">Trial ended</span>
+                        <span th:if="${!access.trialStarted()}">No trial yet</span>
+                        <span th:if="${access.paid()}">
+                            &middot; Paid through
+                            <span th:text="${@displayTime.dayOf(access.paidThrough())}">—</span>
+                        </span>
+                        &middot;
+                        <span th:text="${access.canWrite()} ? 'Can add receipts' : 'Read-only'">—</span>
+                    </div>
+                </div>
+
+                <form method="post" th:action="@{'/admin/users/' + ${user.id} + '/subscription'}"
+                    class="border rounded p-3 mb-4">
+
+                    <div class="row g-3">
+                        <div class="col-12 col-sm-4">
+                            <label for="startMonth" class="form-label fw-bold">From month</label>
+                            <input type="month" id="startMonth" name="startMonth" class="form-control"
+                                required>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <label for="endMonth" class="form-label fw-bold">To month</label>
+                            <input type="month" id="endMonth" name="endMonth" class="form-control"
+                                required>
+                            <div class="form-text">Inclusive — Jan to Mar covers 1 Jan to 31 Mar.</div>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <label for="note" class="form-label fw-bold">Note</label>
+                            <input type="text" id="note" name="note" class="form-control"
+                                maxlength="500">
+                            <div class="form-text">Optional, admin-only.</div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark fw-bold mt-3">Record payment</button>
+                </form>
+
+                <div th:if="${#lists.isEmpty(payments)}" class="alert alert-info" role="alert">
+                    No payments recorded.
+                </div>
+
+                <div th:unless="${#lists.isEmpty(payments)}" class="table-responsive">
+                    <table class="table table-sm table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>Period</th>
+                                <th class="text-end">Months</th>
+                                <th>Note</th>
+                                <th>Recorded</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="p : ${payments}">
+                                <td class="small"
+                                    th:text="${@displayTime.dayOf(p.periodStart)} + ' to ' + ${@displayTime.dayOf(p.lastPaidDay)}">
+                                    —</td>
+                                <td class="text-end" th:text="${p.monthsCount}">—</td>
+                                <td class="small text-muted text-break" style="max-width: 420px;"
+                                    th:text="${p.note} ?: '—'">—</td>
+                                <td class="small text-muted"
+                                    th:text="${@displayTime.dateTime(p.recordedAt)}">—</td>
+                                <td class="text-end">
+                                    <form method="post"
+                                        th:action="@{'/admin/users/' + ${user.id} + '/subscription/' + ${p.id} + '/delete'}"
+                                        onsubmit="return confirm('Delete this payment record? The user loses the access it granted.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

@@ -5,6 +5,7 @@ import com.techexpat.site.config.KbrAuthSuccessHandler;
 import com.techexpat.site.config.PosthogProperties;
 import com.techexpat.site.config.WebSecurityConfig;
 import com.techexpat.site.service.DisplayTime;
+import com.techexpat.site.service.KbrSubscriptionService;
 import com.techexpat.site.service.KbrUserDetailsService;
 import com.techexpat.site.service.KbrUserService;
 import com.techexpat.site.service.ReceiptService;
@@ -33,6 +34,9 @@ class KbrPublicPagesTest {
 
     @MockitoBean
     KbrUserService userService;
+
+    @MockitoBean
+    KbrSubscriptionService subscriptions;
 
     @MockitoBean
     RegistrationRateLimiter rateLimiter;

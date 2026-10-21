@@ -7,6 +7,8 @@ import com.techexpat.site.config.WebSecurityConfig;
 import com.techexpat.site.model.KbrUser;
 import com.techexpat.site.model.Receipt;
 import com.techexpat.site.service.DisplayTime;
+import com.techexpat.site.service.KbrAccessStatus;
+import com.techexpat.site.service.KbrSubscriptionService;
 import com.techexpat.site.service.KbrUserDetailsService;
 import com.techexpat.site.service.KbrUserService;
 import com.techexpat.site.service.ReceiptService;
@@ -61,6 +63,9 @@ class KbrReceiptControllerTest {
     @MockitoBean
     KbrUserService userService;
 
+    @MockitoBean
+    KbrSubscriptionService subscriptions;
+
     @MockitoBean(name = "displayTime")
     DisplayTime displayTime;
 
@@ -81,6 +86,8 @@ class KbrReceiptControllerTest {
         when(userService.findByEmail(EMAIL)).thenReturn(Optional.of(new KbrUser(USER_ID, EMAIL, "hash")));
         // past the first-run business-name gate, which guards these routes
         when(userService.hasBusinessName(EMAIL)).thenReturn(true);
+        // and inside a live trial, which is what makes these routes writable
+        when(subscriptions.statusFor(any())).thenReturn(new KbrAccessStatus(true, 4, 30, 27, null));
     }
 
     @Test
@@ -200,6 +207,53 @@ class KbrReceiptControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(receiptService, never()).delete(any());
+    }
+
+    @Test
+    void readOnlyAccountCannotUpload() throws Exception {
+        givenReadOnly();
+
+        mockMvc.perform(multipart(BASE + "/receipts").file(jpeg())
+                        .param("description", "Fish supplier")
+                        .with(kbrUser()).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(BASE + "/dashboard"));
+
+        verify(receiptService, never()).upload(anyString(), anyString(), any());
+    }
+
+    @Test
+    void readOnlyAccountCannotDelete() throws Exception {
+        givenReadOnly();
+        when(receiptService.findOwned("r-1", USER_ID)).thenReturn(Optional.of(receipt("r.jpg")));
+
+        mockMvc.perform(get(BASE + "/receipts/r-1/delete").with(kbrUser()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(BASE + "/dashboard"));
+        mockMvc.perform(post(BASE + "/receipts/r-1/delete").with(kbrUser()).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(BASE + "/dashboard"));
+
+        verify(receiptService, never()).delete(any());
+    }
+
+    /** The point of read-only: what the user already kept stays reachable. */
+    @Test
+    void readOnlyAccountCanStillPreviewAndDownload() throws Exception {
+        givenReadOnly();
+        when(receiptService.findOwned("r-1", USER_ID)).thenReturn(Optional.of(receipt("r.jpg")));
+        when(receiptService.contentOf(any())).thenReturn(CONTENT);
+
+        mockMvc.perform(get(BASE + "/files/r-1").with(kbrUser()))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(CONTENT));
+        mockMvc.perform(get(BASE + "/files/r-1/download").with(kbrUser()))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(CONTENT));
+    }
+
+    private void givenReadOnly() {
+        when(subscriptions.statusFor(any())).thenReturn(new KbrAccessStatus(true, 31, 30, 0, null));
     }
 
     private static RequestPostProcessor kbrUser() {

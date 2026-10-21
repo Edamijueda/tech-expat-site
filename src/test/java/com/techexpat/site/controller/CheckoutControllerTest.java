@@ -7,6 +7,7 @@ import com.techexpat.site.config.WebSecurityConfig;
 import com.techexpat.site.model.Course;
 import com.techexpat.site.model.Order;
 import com.techexpat.site.service.CourseCatalog;
+import com.techexpat.site.service.KbrSubscriptionService;
 import com.techexpat.site.service.KbrUserDetailsService;
 import com.techexpat.site.service.KbrUserService;
 import com.techexpat.site.service.NowPaymentsClient;
@@ -67,6 +68,9 @@ class CheckoutControllerTest {
 
     @MockitoBean
     KbrUserService kbrUserService;
+
+    @MockitoBean
+    KbrSubscriptionService kbrSubscriptionService;
 
     private final Course course = new Course("practical-sql", "Practical SQL", new BigDecimal("29.00"));
 

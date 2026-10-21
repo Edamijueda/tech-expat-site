@@ -31,7 +31,34 @@
                 <div th:if="${infoMessage}" class="alert alert-info" role="alert"
                     th:text="${infoMessage}">Info.</div>
 
-                <form th:action="@{/tool/keep-business-receipt/receipts}" method="post"
+                <p th:if="${access != null and access.trialActive()}" class="text-muted small mb-3">
+                    <span th:text="${access.trialDaysShown()} + '/' + ${access.trialDays()}">4/30</span>
+                    free trial.
+                </p>
+
+                <div th:if="${access != null and access.trialEndingSoon()}"
+                    class="alert alert-warning" role="alert">
+                    Your free trial ends in
+                    <span th:text="${access.trialDaysRemaining()}">3</span>
+                    <span th:text="${access.trialDaysRemaining() == 1} ? 'day' : 'days'">days</span>.
+                    To keep adding receipts, email
+                    <a href="mailto:hello@tech-expat.com">hello@tech-expat.com</a>.
+                </div>
+
+                <p th:if="${access != null and access.paid()}" class="text-muted small mb-3">
+                    Paid through <span th:text="${@displayTime.dayOf(access.paidThrough())}">—</span>.
+                </p>
+
+                <div th:if="${access != null and !access.canWrite()}" class="alert alert-info"
+                    role="alert">
+                    Your free trial has ended. Everything you've kept is still here to view and
+                    download. To start adding receipts again, email
+                    <a href="mailto:hello@tech-expat.com">hello@tech-expat.com</a>
+                    to buy or discuss a subscription.
+                </div>
+
+                <form th:if="${access == null or access.canWrite()}"
+                    th:action="@{/tool/keep-business-receipt/receipts}" method="post"
                     enctype="multipart/form-data" class="border rounded p-3 mb-4" novalidate>
 
                     <div class="mb-3">
@@ -83,7 +110,8 @@
                             <a class="btn btn-sm btn-outline-dark flex-fill flex-sm-grow-0"
                                 th:href="@{/tool/keep-business-receipt/files/{id}/download(id=${receipt.id})}"
                                 th:title="'Download ' + ${receipt.description}">Save</a>
-                            <a class="btn btn-sm btn-outline-danger flex-fill flex-sm-grow-0"
+                            <a th:if="${access == null or access.canWrite()}"
+                                class="btn btn-sm btn-outline-danger flex-fill flex-sm-grow-0"
                                 th:href="@{/tool/keep-business-receipt/receipts/{id}/delete(id=${receipt.id})}"
                                 th:title="'Delete ' + ${receipt.description}">Delete</a>
                         </div>
