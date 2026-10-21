@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Terms</title>
+    <meta name="description" content="Terms of use for Keep Business Receipt.">
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-end p-3">
+            <a th:href="@{/tool/keep-business-receipt}" class="btn btn-outline-dark fw-bold">Back</a>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-4">
+            <div class="px-4" style="width: 100%; max-width: 640px;">
+
+                <h1 class="fw-semibold fs-3 mb-4">Terms</h1>
+
+                <h2 class="fw-semibold fs-5 mt-4 mb-2">What this is</h2>
+                <p>Keep Business Receipt is an early tool, run by one person, for keeping
+                    photographs of business receipts somewhere you can find them again.</p>
+
+                <h2 class="fw-semibold fs-5 mt-4 mb-2">Keep your own copies</h2>
+                <p>Please do not let this be the only place a receipt exists. It is a
+                    convenience, not a system of record, and you should keep your originals or
+                    your own copies of anything you rely on for tax, audit or accounting.</p>
+
+                <h2 class="fw-semibold fs-5 mt-4 mb-2">Your account</h2>
+                <p>Accounts are approved by hand and are for the business you told us about.
+                    Keep your PIN to yourself. If you forget it, email us and we will enable a
+                    reset.</p>
+                <p>We may suspend an account that is being used to store something other than
+                    business receipts, or in a way that threatens the service for other people.</p>
+
+                <h2 class="fw-semibold fs-5 mt-4 mb-2">What you upload</h2>
+                <p>Upload receipts and documents that are yours to keep. Files are limited to
+                    8 MB each, as photos or PDFs.</p>
+
+                <h2 class="fw-semibold fs-5 mt-4 mb-2">Availability</h2>
+                <p>We will do our best to keep the tool running and your files intact, but it
+                    is provided as it is, without a guarantee of availability. If we ever need
+                    to shut it down, we will email you first so you can take your files.</p>
+
+                <h2 class="fw-semibold fs-5 mt-4 mb-2">Privacy</h2>
+                <p>What we store and why is set out on the
+                    <a th:href="@{/tool/keep-business-receipt/privacy}">privacy page</a>.</p>
+
+                <h2 class="fw-semibold fs-5 mt-4 mb-2">Questions</h2>
+                <p>Email <a href="mailto:hello@tech-expat.com">hello@tech-expat.com</a>.</p>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

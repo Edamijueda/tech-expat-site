@@ -57,30 +57,33 @@
                 </p>
 
                 <ul class="list-unstyled m-0" th:unless="${#lists.isEmpty(receipts)}">
-                    <li th:each="receipt : ${receipts}"
-                        class="border-bottom py-3 d-flex align-items-start gap-3">
+                    <li th:each="receipt : ${receipts}" class="border-bottom py-3">
 
-                        <span class="fs-4" aria-hidden="true"
-                            th:text="${receipt.pdf} ? '📄' : '🧾'">🧾</span>
+                        <div class="d-flex align-items-start gap-2">
+                            <span class="fs-4 lh-1" aria-hidden="true"
+                                th:text="${receipt.pdf} ? '📄' : '🧾'">🧾</span>
 
-                        <div class="flex-grow-1" style="min-width: 0;">
-                            <div class="fw-semibold text-break" th:text="${receipt.description}">
-                                Description
-                            </div>
-                            <div class="text-muted small"
-                                th:text="${@displayTime.day(receipt.uploadedAt)}">
-                                Date
+                            <div class="flex-grow-1" style="min-width: 0;">
+                                <div class="fw-semibold text-break" th:text="${receipt.description}">
+                                    Description
+                                </div>
+                                <div class="text-muted small"
+                                    th:text="${@displayTime.day(receipt.uploadedAt)}">
+                                    Date
+                                </div>
                             </div>
                         </div>
 
-                        <div class="d-flex gap-2 flex-shrink-0">
-                            <a class="btn btn-sm btn-outline-dark" target="_blank"
+                        <!-- Full-width taps on a phone, ordinary buttons from sm up. -->
+                        <div class="d-flex gap-2 mt-2">
+                            <a class="btn btn-sm btn-outline-dark flex-fill flex-sm-grow-0"
+                                target="_blank"
                                 th:href="@{/tool/keep-business-receipt/files/{id}(id=${receipt.id})}"
                                 th:title="'Preview ' + ${receipt.description}">View</a>
-                            <a class="btn btn-sm btn-outline-dark"
+                            <a class="btn btn-sm btn-outline-dark flex-fill flex-sm-grow-0"
                                 th:href="@{/tool/keep-business-receipt/files/{id}/download(id=${receipt.id})}"
                                 th:title="'Download ' + ${receipt.description}">Save</a>
-                            <a class="btn btn-sm btn-outline-danger"
+                            <a class="btn btn-sm btn-outline-danger flex-fill flex-sm-grow-0"
                                 th:href="@{/tool/keep-business-receipt/receipts/{id}/delete(id=${receipt.id})}"
                                 th:title="'Delete ' + ${receipt.description}">Delete</a>
                         </div>

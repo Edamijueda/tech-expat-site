@@ -99,6 +99,16 @@ public class KbrAuthController {
         return "tool/keep-business-receipt/forgot-pin";
     }
 
+    @GetMapping("/terms")
+    public String terms() {
+        return "tool/keep-business-receipt/terms";
+    }
+
+    @GetMapping("/privacy")
+    public String privacy() {
+        return "tool/keep-business-receipt/privacy";
+    }
+
     @GetMapping("/request-access")
     public String requestAccessForm(Model model) {
         if (!model.containsAttribute("form")) {

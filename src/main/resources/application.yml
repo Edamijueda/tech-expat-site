@@ -32,6 +32,9 @@ admin:
   username: ${ADMIN_USERNAME:}
   password: ${ADMIN_PASSWORD:}
 
+kbr:
+  remember-me-key: ${KBR_REMEMBER_ME_KEY:}
+
 receipts:
   supabase-url: ${SUPABASE_URL:}
   service-role-key: ${SUPABASE_SERVICE_ROLE_KEY:}

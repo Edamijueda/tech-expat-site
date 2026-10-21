@@ -25,10 +25,13 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties(AdminProperties.class)
+@EnableConfigurationProperties({AdminProperties.class, KbrProperties.class})
 public class WebSecurityConfig {
 
     private static final Logger log = LoggerFactory.getLogger(WebSecurityConfig.class);
+
+    /** 30 days: long enough that a trader isn't re-entering a PIN on every trip to the market. */
+    private static final int REMEMBER_ME_DAYS = 30;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -85,7 +88,9 @@ public class WebSecurityConfig {
                                                 KbrUserDetailsService kbrUserDetailsService,
                                                 PasswordEncoder encoder,
                                                 KbrAuthFailureHandler failureHandler,
-                                                KbrAuthSuccessHandler successHandler) throws Exception {
+                                                KbrAuthSuccessHandler successHandler,
+                                                KbrProperties kbrProps,
+                                                Environment env) throws Exception {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(kbrUserDetailsService);
         provider.setPasswordEncoder(encoder);
 
@@ -99,6 +104,13 @@ public class WebSecurityConfig {
                 ).hasRole("KBR_USER")
                 .anyRequest().permitAll())
             .csrf(csrf -> csrf.ignoringRequestMatchers("/webhooks/**"))
+            .rememberMe(remember -> remember
+                .key(rememberMeKey(kbrProps, env))
+                .rememberMeParameter("remember-me")
+                .rememberMeCookieName("kbr-remember-me")
+                .tokenValiditySeconds(REMEMBER_ME_DAYS * 24 * 60 * 60)
+                .useSecureCookie(isProd(env))
+                .userDetailsService(kbrUserDetailsService))
             .formLogin(form -> form
                 .loginPage("/tool/keep-business-receipt/sign-in")
                 .loginProcessingUrl("/tool/keep-business-receipt/sign-in")
@@ -111,10 +123,28 @@ public class WebSecurityConfig {
                 .logoutUrl("/tool/keep-business-receipt/sign-out")
                 .logoutSuccessUrl("/tool/keep-business-receipt/sign-in?signed-out")
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
+                .deleteCookies("JSESSIONID", "kbr-remember-me")
                 .permitAll())
             .authenticationProvider(provider);
         return http.build();
+    }
+
+    /**
+     * A guessable key means forgeable login cookies, so prod refuses to start without one
+     * rather than falling back to a value that is published in this repository.
+     */
+    private static String rememberMeKey(KbrProperties props, Environment env) {
+        String key = props.rememberMeKey();
+        if (key != null && !key.isBlank()) {
+            return key;
+        }
+        if (isProd(env)) {
+            throw new IllegalStateException(
+                    "KBR_REMEMBER_ME_KEY must be set when running the prod profile");
+        }
+        log.warn("KBR_REMEMBER_ME_KEY not set — using a DEVELOPMENT-ONLY key. "
+                + "Do not deploy without setting this.");
+        return "kbr-dev-only-remember-me-key";
     }
 
     private static boolean isProd(Environment env) {
