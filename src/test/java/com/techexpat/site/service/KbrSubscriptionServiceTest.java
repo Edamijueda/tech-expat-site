@@ -75,6 +75,35 @@ class KbrSubscriptionServiceTest {
         assertThat(service.statusFor(userApprovedDaysAgo(23, 30)).trialEndingSoon()).isTrue();
     }
 
+    /** Approved before the trial shipped: approval stands in, rather than no trial at all. */
+    @Test
+    void anApprovedAccountWithNoTrialStartFallsBackToItsApprovalDate() {
+        KbrUser user = pendingUser();
+        user.setApprovedAt(Instant.now().minus(3, ChronoUnit.DAYS));
+
+        KbrAccessStatus status = service.statusFor(user);
+
+        assertThat(status.trialStarted()).isTrue();
+        assertThat(status.trialDaysUsed()).isEqualTo(4);
+        assertThat(status.canWrite()).isTrue();
+    }
+
+    @Test
+    void anExplicitTrialStartWinsOverTheApprovalDate() {
+        KbrUser user = userApprovedDaysAgo(9, 30);
+        user.setApprovedAt(Instant.now().minus(40, ChronoUnit.DAYS));
+
+        assertThat(service.statusFor(user).trialDaysUsed()).isEqualTo(10);
+    }
+
+    @Test
+    void anAccountWithNeitherDateHasNoTrial() {
+        KbrAccessStatus status = service.statusFor(pendingUser());
+
+        assertThat(status.trialStarted()).isFalse();
+        assertThat(status.canWrite()).isFalse();
+    }
+
     @Test
     void anExpiredTrialIsCarriedByAPaidPeriod() {
         LocalDate today = displayTime.today();
@@ -179,6 +208,10 @@ class KbrSubscriptionServiceTest {
 
     private static KbrSubscriptionPayment payment(LocalDate start, LocalDate end) {
         return new KbrSubscriptionPayment("p-" + start, "u-1", start, end, null);
+    }
+
+    private static KbrUser pendingUser() {
+        return new KbrUser("u-1", "a@b.com", "hash");
     }
 
     private static KbrUser userApprovedDaysAgo(int days, int trialDays) {

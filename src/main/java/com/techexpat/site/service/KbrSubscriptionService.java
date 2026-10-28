@@ -7,6 +7,7 @@ import com.techexpat.site.repository.KbrSubscriptionPaymentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
@@ -39,7 +40,7 @@ public class KbrSubscriptionService {
 
     public KbrAccessStatus statusFor(KbrUser user) {
         LocalDate today = displayTime.today();
-        LocalDate trialStart = displayTime.toLocalDate(user.getTrialStartedAt());
+        LocalDate trialStart = displayTime.toLocalDate(trialStartOf(user));
 
         int used = 0;
         int remaining = 0;
@@ -50,6 +51,17 @@ public class KbrSubscriptionService {
 
         return new KbrAccessStatus(trialStart != null, used, user.getTrialDays(), remaining,
                 paidThrough(findFor(user.getId()), today));
+    }
+
+    /**
+     * When the trial clock started. {@code approve()} sets {@code trialStartedAt}, but an
+     * account can reach APPROVED without it — rows approved before the trial shipped, a
+     * hand-run SQL fix, a restored backup. Approval is the next best start date, and
+     * without this fallback such an account is silently read-only with no Extend trial
+     * button to rescue it.
+     */
+    private static Instant trialStartOf(KbrUser user) {
+        return user.getTrialStartedAt() != null ? user.getTrialStartedAt() : user.getApprovedAt();
     }
 
     /**
