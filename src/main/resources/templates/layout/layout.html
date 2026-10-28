@@ -38,7 +38,8 @@
 
     <footer class="d-flex flex-wrap justify-content-between align-items-center gap-2 px-3 py-2">
         <p class="mb-0">&copy; 2026 </p>
-        <p class="mb-0 small">
+        <!-- Both documents cover the receipt tool only, so they show on its pages alone. -->
+        <p class="mb-0 small" th:if="${onKbrPage}">
             <a th:href="@{/tool/keep-business-receipt/terms}">Terms</a>
             &middot;
             <a th:href="@{/tool/keep-business-receipt/privacy}">Privacy</a>

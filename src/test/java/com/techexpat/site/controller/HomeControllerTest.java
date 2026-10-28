@@ -14,7 +14,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -53,6 +56,16 @@ class HomeControllerTest {
     void homePageRendersIndexTemplate() throws Exception {
         mockMvc.perform(get("/"))
                .andExpect(view().name("index"));
+    }
+
+    /** The footer's terms and privacy cover the receipt tool only, not the whole site. */
+    @Test
+    void homePageFooterOmitsTheKbrTermsAndPrivacyLinks() throws Exception {
+        mockMvc.perform(get("/"))
+               .andExpect(content().string(
+                       not(containsString("/tool/keep-business-receipt/terms"))))
+               .andExpect(content().string(
+                       not(containsString("/tool/keep-business-receipt/privacy"))));
     }
 
 }

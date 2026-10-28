@@ -74,6 +74,15 @@ class KbrPublicPagesTest {
     }
 
     @Test
+    void kbrPagesCarryTheToolsTermsAndPrivacyInTheFooter() throws Exception {
+        mockMvc.perform(get(BASE + "/terms"))
+                .andExpect(content().string(
+                        org.hamcrest.Matchers.containsString("/tool/keep-business-receipt/privacy")))
+                .andExpect(content().string(
+                        org.hamcrest.Matchers.containsString("/tool/keep-business-receipt/terms")));
+    }
+
+    @Test
     void privacySaysWhatIsStored() throws Exception {
         mockMvc.perform(get(BASE + "/privacy"))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("business name")))

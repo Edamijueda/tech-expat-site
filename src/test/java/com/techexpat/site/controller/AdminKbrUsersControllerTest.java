@@ -39,6 +39,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
@@ -97,6 +98,16 @@ class AdminKbrUsersControllerTest {
                 .andExpect(view().name("admin/users/index"))
                 .andExpect(model().attribute("users", List.of(user)))
                 .andExpect(model().attributeExists("now"));
+    }
+
+    @Test
+    void adminFooterOmitsTheKbrTermsAndPrivacyLinks() throws Exception {
+        when(userService.findAllNewestFirst()).thenReturn(List.of());
+
+        mockMvc.perform(get("/admin/users").with(httpBasic("admin", "admin")))
+                .andExpect(content().string(
+                        org.hamcrest.Matchers.not(
+                                org.hamcrest.Matchers.containsString("/tool/keep-business-receipt/terms"))));
     }
 
     @Test
