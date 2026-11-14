@@ -1,6 +1,6 @@
 package com.techexpat.site.config;
 
-import com.techexpat.site.service.KbrUserDetailsService;
+import com.techexpat.site.service.KbdUserDetailsService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties({AdminProperties.class, KbrProperties.class})
+@EnableConfigurationProperties({AdminProperties.class, KbdProperties.class})
 public class WebSecurityConfig {
 
     private static final Logger log = LoggerFactory.getLogger(WebSecurityConfig.class);
@@ -85,45 +85,45 @@ public class WebSecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain userFilterChain(HttpSecurity http,
-                                                KbrUserDetailsService kbrUserDetailsService,
+                                                KbdUserDetailsService kbdUserDetailsService,
                                                 PasswordEncoder encoder,
-                                                KbrAuthFailureHandler failureHandler,
-                                                KbrAuthSuccessHandler successHandler,
-                                                KbrProperties kbrProps,
+                                                KbdAuthFailureHandler failureHandler,
+                                                KbdAuthSuccessHandler successHandler,
+                                                KbdProperties kbdProps,
                                                 Environment env) throws Exception {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(kbrUserDetailsService);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(kbdUserDetailsService);
         provider.setPasswordEncoder(encoder);
 
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/tool/keep-business-receipt/dashboard/**",
-                    "/tool/keep-business-receipt/setup",
-                    "/tool/keep-business-receipt/receipts/**",
-                    "/tool/keep-business-receipt/files/**"
-                ).hasRole("KBR_USER")
+                    "/tool/keep-business-docs/dashboard/**",
+                    "/tool/keep-business-docs/setup",
+                    "/tool/keep-business-docs/docs/**",
+                    "/tool/keep-business-docs/files/**"
+                ).hasRole("KBD_USER")
                 .anyRequest().permitAll())
             .csrf(csrf -> csrf.ignoringRequestMatchers("/webhooks/**"))
             .rememberMe(remember -> remember
-                .key(rememberMeKey(kbrProps, env))
+                .key(rememberMeKey(kbdProps, env))
                 .rememberMeParameter("remember-me")
-                .rememberMeCookieName("kbr-remember-me")
+                .rememberMeCookieName("kbd-remember-me")
                 .tokenValiditySeconds(REMEMBER_ME_DAYS * 24 * 60 * 60)
                 .useSecureCookie(isProd(env))
-                .userDetailsService(kbrUserDetailsService))
+                .userDetailsService(kbdUserDetailsService))
             .formLogin(form -> form
-                .loginPage("/tool/keep-business-receipt/sign-in")
-                .loginProcessingUrl("/tool/keep-business-receipt/sign-in")
+                .loginPage("/tool/keep-business-docs/sign-in")
+                .loginProcessingUrl("/tool/keep-business-docs/sign-in")
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .failureHandler(failureHandler)
                 .successHandler(successHandler)
                 .permitAll())
             .logout(logout -> logout
-                .logoutUrl("/tool/keep-business-receipt/sign-out")
-                .logoutSuccessUrl("/tool/keep-business-receipt/sign-in?signed-out")
+                .logoutUrl("/tool/keep-business-docs/sign-out")
+                .logoutSuccessUrl("/tool/keep-business-docs/sign-in?signed-out")
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "kbr-remember-me")
+                .deleteCookies("JSESSIONID", "kbd-remember-me")
                 .permitAll())
             .authenticationProvider(provider);
         return http.build();
@@ -133,18 +133,18 @@ public class WebSecurityConfig {
      * A guessable key means forgeable login cookies, so prod refuses to start without one
      * rather than falling back to a value that is published in this repository.
      */
-    private static String rememberMeKey(KbrProperties props, Environment env) {
+    private static String rememberMeKey(KbdProperties props, Environment env) {
         String key = props.rememberMeKey();
         if (key != null && !key.isBlank()) {
             return key;
         }
         if (isProd(env)) {
             throw new IllegalStateException(
-                    "KBR_REMEMBER_ME_KEY must be set when running the prod profile");
+                    "KBD_REMEMBER_ME_KEY must be set when running the prod profile");
         }
-        log.warn("KBR_REMEMBER_ME_KEY not set — using a DEVELOPMENT-ONLY key. "
+        log.warn("KBD_REMEMBER_ME_KEY not set — using a DEVELOPMENT-ONLY key. "
                 + "Do not deploy without setting this.");
-        return "kbr-dev-only-remember-me-key";
+        return "kbd-dev-only-remember-me-key";
     }
 
     private static boolean isProd(Environment env) {

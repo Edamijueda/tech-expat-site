@@ -1,0 +1,141 @@
+package com.techexpat.site.service;
+
+import com.techexpat.site.model.KbdSubscriptionPayment;
+import com.techexpat.site.model.KbdUser;
+import com.techexpat.site.repository.KbdSubscriptionPaymentRepository;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+/**
+ * Trial and subscription state. Payments are collected by hand, so this only records
+ * which calendar months were paid for and answers whether a user may write today.
+ */
+@Service
+public class KbdSubscriptionService {
+
+    /** A sanity bound on a single record, so a mistyped year can't grant a century. */
+    private static final int MAX_MONTHS = 24;
+
+    private final KbdSubscriptionPaymentRepository payments;
+    private final DisplayTime displayTime;
+
+    public KbdSubscriptionService(KbdSubscriptionPaymentRepository payments,
+                                  DisplayTime displayTime) {
+        this.payments = payments;
+        this.displayTime = displayTime;
+    }
+
+    public List<KbdSubscriptionPayment> findFor(String userId) {
+        return payments.findByUserIdOrderByPeriodStartDesc(userId);
+    }
+
+    public KbdAccessStatus statusFor(KbdUser user) {
+        LocalDate today = displayTime.today();
+        LocalDate trialStart = displayTime.toLocalDate(trialStartOf(user));
+
+        int used = 0;
+        int remaining = 0;
+        if (trialStart != null) {
+            used = Math.max(1, (int) ChronoUnit.DAYS.between(trialStart, today) + 1);
+            remaining = Math.max(0, user.getTrialDays() - used + 1);
+        }
+
+        return new KbdAccessStatus(trialStart != null, used, user.getTrialDays(), remaining,
+                paidThrough(findFor(user.getId()), today));
+    }
+
+    /**
+     * When the trial clock started. {@code approve()} sets {@code trialStartedAt}, but an
+     * account can reach APPROVED without it — rows approved before the trial shipped, a
+     * hand-run SQL fix, a restored backup. Approval is the next best start date, and
+     * without this fallback such an account is silently read-only with no Extend trial
+     * button to rescue it.
+     */
+    private static Instant trialStartOf(KbdUser user) {
+        return user.getTrialStartedAt() != null ? user.getTrialStartedAt() : user.getApprovedAt();
+    }
+
+    /**
+     * Records months paid for, inclusive of both ends — January to March 2027 is stored
+     * as 2027-01-01 / 2027-04-01. Future periods are fine; overlapping ones are not.
+     *
+     * @return the reason it was refused, or empty once saved
+     */
+    @Transactional
+    public Optional<String> record(String userId, YearMonth start, YearMonth end, String note) {
+        if (start == null || end == null) {
+            return Optional.of("Choose both a start month and an end month.");
+        }
+        if (end.isBefore(start)) {
+            return Optional.of("The end month cannot be before the start month.");
+        }
+
+        long months = ChronoUnit.MONTHS.between(start, end) + 1;
+        if (months > MAX_MONTHS) {
+            return Optional.of("A single payment can cover at most " + MAX_MONTHS + " months.");
+        }
+
+        LocalDate periodStart = start.atDay(1);
+        LocalDate periodEnd = end.plusMonths(1).atDay(1);
+
+        List<KbdSubscriptionPayment> clashes = payments
+                .findByUserIdAndPeriodStartLessThanAndPeriodEndGreaterThan(
+                        userId, periodEnd, periodStart);
+        if (!clashes.isEmpty()) {
+            KbdSubscriptionPayment clash = clashes.getFirst();
+            return Optional.of("Those months overlap a period already recorded: "
+                    + displayTime.dayOf(clash.getPeriodStart())
+                    + " to " + displayTime.dayOf(clash.getLastPaidDay()) + ".");
+        }
+
+        String trimmed = note == null || note.isBlank() ? null : note.trim();
+        payments.save(new KbdSubscriptionPayment(
+                UUID.randomUUID().toString(), userId, periodStart, periodEnd, trimmed));
+        return Optional.empty();
+    }
+
+    @Transactional
+    public void delete(String paymentId) {
+        payments.deleteById(paymentId);
+    }
+
+    /**
+     * The last day the user is paid up to, following contiguous periods so a quarter
+     * recorded in advance extends the date the user already sees. Null when nothing
+     * covers today.
+     */
+    private static LocalDate paidThrough(List<KbdSubscriptionPayment> userPayments,
+                                         LocalDate today) {
+        LocalDate end = userPayments.stream()
+                .filter(payment -> payment.covers(today))
+                .map(KbdSubscriptionPayment::getPeriodEnd)
+                .findFirst()
+                .orElse(null);
+        if (end == null) {
+            return null;
+        }
+
+        // Overlaps are refused, so at most one period can begin where another ends.
+        Optional<KbdSubscriptionPayment> next;
+        while ((next = startingOn(userPayments, end)).isPresent()) {
+            end = next.get().getPeriodEnd();
+        }
+        return end.minusDays(1);
+    }
+
+    private static Optional<KbdSubscriptionPayment> startingOn(
+            List<KbdSubscriptionPayment> userPayments, LocalDate day) {
+        return userPayments.stream()
+                .filter(payment -> payment.getPeriodStart().equals(day))
+                .findFirst();
+    }
+}

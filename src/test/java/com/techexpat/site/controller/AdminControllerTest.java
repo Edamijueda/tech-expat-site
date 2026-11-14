@@ -1,16 +1,16 @@
 package com.techexpat.site.controller;
 
-import com.techexpat.site.config.KbrAuthFailureHandler;
-import com.techexpat.site.config.KbrAuthSuccessHandler;
+import com.techexpat.site.config.KbdAuthFailureHandler;
+import com.techexpat.site.config.KbdAuthSuccessHandler;
 import com.techexpat.site.config.PosthogProperties;
 import com.techexpat.site.config.WebSecurityConfig;
 import com.techexpat.site.model.Course;
 import com.techexpat.site.model.Order;
 import com.techexpat.site.service.CourseCatalog;
 import com.techexpat.site.service.DisplayTime;
-import com.techexpat.site.service.KbrSubscriptionService;
-import com.techexpat.site.service.KbrUserDetailsService;
-import com.techexpat.site.service.KbrUserService;
+import com.techexpat.site.service.KbdSubscriptionService;
+import com.techexpat.site.service.KbdUserDetailsService;
+import com.techexpat.site.service.KbdUserService;
 import com.techexpat.site.service.OrderService;
 
 import org.junit.jupiter.api.Test;
@@ -48,19 +48,19 @@ class AdminControllerTest {
     PosthogProperties posthogProperties;
 
     @MockitoBean
-    KbrUserDetailsService kbrUserDetailsService;
+    KbdUserDetailsService kbdUserDetailsService;
 
     @MockitoBean
-    KbrAuthFailureHandler kbrAuthFailureHandler;
+    KbdAuthFailureHandler kbdAuthFailureHandler;
 
     @MockitoBean
-    KbrAuthSuccessHandler kbrAuthSuccessHandler;
+    KbdAuthSuccessHandler kbdAuthSuccessHandler;
 
     @MockitoBean
-    KbrUserService kbrUserService;
+    KbdUserService kbdUserService;
 
     @MockitoBean
-    KbrSubscriptionService kbrSubscriptionService;
+    KbdSubscriptionService kbdSubscriptionService;
 
     @MockitoBean(name = "displayTime")
     DisplayTime displayTime;

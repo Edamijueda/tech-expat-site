@@ -38,11 +38,11 @@
 
     <footer class="d-flex flex-wrap justify-content-between align-items-center gap-2 px-3 py-2">
         <p class="mb-0">&copy; 2026 </p>
-        <!-- Both documents cover the receipt tool only, so they show on its pages alone. -->
-        <p class="mb-0 small" th:if="${onKbrPage}">
-            <a th:href="@{/tool/keep-business-receipt/terms}">Terms</a>
+        <!-- Both documents cover Keep Business Docs only, so they show on its pages alone. -->
+        <p class="mb-0 small" th:if="${onKbdPage}">
+            <a th:href="@{/tool/keep-business-docs/terms}">Terms</a>
             &middot;
-            <a th:href="@{/tool/keep-business-receipt/privacy}">Privacy</a>
+            <a th:href="@{/tool/keep-business-docs/privacy}">Privacy</a>
         </p>
         <p class="mb-0">hello@tech-expat.com</p>
     </footer>

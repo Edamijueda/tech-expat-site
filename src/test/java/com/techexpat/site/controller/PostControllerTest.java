@@ -1,14 +1,14 @@
 package com.techexpat.site.controller;
 
-import com.techexpat.site.config.KbrAuthFailureHandler;
-import com.techexpat.site.config.KbrAuthSuccessHandler;
+import com.techexpat.site.config.KbdAuthFailureHandler;
+import com.techexpat.site.config.KbdAuthSuccessHandler;
 import com.techexpat.site.config.PosthogProperties;
 import com.techexpat.site.config.WebSecurityConfig;
 import com.techexpat.site.model.Post;
 import com.techexpat.site.model.Section;
-import com.techexpat.site.service.KbrSubscriptionService;
-import com.techexpat.site.service.KbrUserDetailsService;
-import com.techexpat.site.service.KbrUserService;
+import com.techexpat.site.service.KbdSubscriptionService;
+import com.techexpat.site.service.KbdUserDetailsService;
+import com.techexpat.site.service.KbdUserService;
 import com.techexpat.site.service.PostService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,19 +42,19 @@ class PostControllerTest {
     PostService postService;
 
     @MockitoBean
-    KbrUserDetailsService kbrUserDetailsService;
+    KbdUserDetailsService kbdUserDetailsService;
 
     @MockitoBean
-    KbrAuthFailureHandler kbrAuthFailureHandler;
+    KbdAuthFailureHandler kbdAuthFailureHandler;
 
     @MockitoBean
-    KbrAuthSuccessHandler kbrAuthSuccessHandler;
+    KbdAuthSuccessHandler kbdAuthSuccessHandler;
 
     @MockitoBean
-    KbrUserService kbrUserService;
+    KbdUserService kbdUserService;
 
     @MockitoBean
-    KbrSubscriptionService kbrSubscriptionService;
+    KbdSubscriptionService kbdSubscriptionService;
 
     private static final Post SAMPLE = new Post(
             "known", 1, "Known Post", "Tobi Omorubore",
