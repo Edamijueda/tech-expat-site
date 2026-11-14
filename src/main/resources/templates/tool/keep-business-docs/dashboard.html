@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}" lang="en">
+
+<head>
+    <title>Dashboard</title>
+</head>
+
+<body>
+
+    <div layout:fragment="notice"></div>
+
+    <main layout:fragment="content">
+
+        <div class="d-flex justify-content-end p-3">
+            <form th:action="@{/tool/keep-business-docs/sign-out}" method="post" class="m-0">
+                <button type="submit" class="btn btn-outline-dark fw-bold">Sign out</button>
+            </form>
+        </div>
+
+        <section class="flex-grow-1 d-flex justify-content-center align-items-start py-4">
+            <div class="px-4" style="width: 100%; max-width: 720px;">
+
+                <h1 class="fw-semibold fs-2 mb-1" th:text="${businessName}">Dashboard</h1>
+                <p class="text-muted small mb-4">
+                    Signed in as <span th:text="${userEmail}">you</span>.
+                </p>
+
+                <div th:if="${errorMessage}" class="alert alert-danger" role="alert"
+                    th:text="${errorMessage}">Error.</div>
+                <div th:if="${infoMessage}" class="alert alert-info" role="alert"
+                    th:text="${infoMessage}">Info.</div>
+
+                <p th:if="${access != null and access.trialActive()}" class="text-muted small mb-3">
+                    <span th:text="${access.trialDaysShown()} + '/' + ${access.trialDays()}">4/30</span>
+                    free trial.
+                </p>
+
+                <div th:if="${access != null and access.trialEndingSoon()}"
+                    class="alert alert-warning" role="alert">
+                    Your free trial ends in
+                    <span th:text="${access.trialDaysRemaining()}">3</span>
+                    <span th:text="${access.trialDaysRemaining() == 1} ? 'day' : 'days'">days</span>.
+                    To keep adding documents, email
+                    <a href="mailto:hello@tech-expat.com">hello@tech-expat.com</a>.
+                </div>
+
+                <p th:if="${access != null and access.paid()}" class="text-muted small mb-3">
+                    Paid through <span th:text="${@displayTime.dayOf(access.paidThrough())}">—</span>.
+                </p>
+
+                <div th:if="${access != null and !access.canWrite()}" class="alert alert-info"
+                    role="alert">
+                    Your free trial has ended. Everything you've kept is still here to view and
+                    download. To start adding documents again, email
+                    <a href="mailto:hello@tech-expat.com">hello@tech-expat.com</a>
+                    to buy or discuss a subscription.
+                </div>
+
+                <form th:if="${access == null or access.canWrite()}"
+                    th:action="@{/tool/keep-business-docs/docs}" method="post"
+                    enctype="multipart/form-data" class="border rounded p-3 mb-4" novalidate>
+
+                    <div class="mb-3">
+                        <label for="file" class="form-label fw-bold">Document</label>
+                        <input type="file" id="file" name="file" class="form-control" required
+                            accept="image/jpeg,image/png,image/heic,application/pdf"
+                            capture="environment">
+                        <div class="form-text">Photo or PDF, up to 8 MB.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-bold">Description</label>
+                        <input type="text" id="description" name="description" class="form-control"
+                            required maxlength="500" th:value="${description}">
+                        <div class="form-text">A few words to help you find it later.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark fw-bold w-100">Keep document</button>
+                </form>
+
+                <p th:if="${#lists.isEmpty(docs)}" class="text-muted small">
+                    Nothing kept yet.
+                </p>
+
+                <ul class="list-unstyled m-0" th:unless="${#lists.isEmpty(docs)}">
+                    <li th:each="doc : ${docs}" class="border-bottom py-3">
+
+                        <div class="d-flex align-items-start gap-2">
+                            <span class="fs-4 lh-1" aria-hidden="true"
+                                th:text="${doc.pdf} ? '📄' : '🧾'">🧾</span>
+
+                            <div class="flex-grow-1" style="min-width: 0;">
+                                <div class="fw-semibold text-break" th:text="${doc.description}">
+                                    Description
+                                </div>
+                                <div class="text-muted small"
+                                    th:text="${@displayTime.day(doc.uploadedAt)}">
+                                    Date
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Full-width taps on a phone, ordinary buttons from sm up. -->
+                        <div class="d-flex gap-2 mt-2">
+                            <a class="btn btn-sm btn-outline-dark flex-fill flex-sm-grow-0"
+                                target="_blank"
+                                th:href="@{/tool/keep-business-docs/files/{id}(id=${doc.id})}"
+                                th:title="'Preview ' + ${doc.description}">View</a>
+                            <a class="btn btn-sm btn-outline-dark flex-fill flex-sm-grow-0"
+                                th:href="@{/tool/keep-business-docs/files/{id}/download(id=${doc.id})}"
+                                th:title="'Download ' + ${doc.description}">Save</a>
+                            <a th:if="${access == null or access.canWrite()}"
+                                class="btn btn-sm btn-outline-danger flex-fill flex-sm-grow-0"
+                                th:href="@{/tool/keep-business-docs/docs/{id}/delete(id=${doc.id})}"
+                                th:title="'Delete ' + ${doc.description}">Delete</a>
+                        </div>
+
+                    </li>
+                </ul>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

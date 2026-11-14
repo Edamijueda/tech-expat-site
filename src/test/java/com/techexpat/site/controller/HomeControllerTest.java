@@ -1,12 +1,12 @@
 package com.techexpat.site.controller;
 
-import com.techexpat.site.config.KbrAuthFailureHandler;
-import com.techexpat.site.config.KbrAuthSuccessHandler;
+import com.techexpat.site.config.KbdAuthFailureHandler;
+import com.techexpat.site.config.KbdAuthSuccessHandler;
 import com.techexpat.site.config.PosthogProperties;
 import com.techexpat.site.config.WebSecurityConfig;
-import com.techexpat.site.service.KbrSubscriptionService;
-import com.techexpat.site.service.KbrUserDetailsService;
-import com.techexpat.site.service.KbrUserService;
+import com.techexpat.site.service.KbdSubscriptionService;
+import com.techexpat.site.service.KbdUserDetailsService;
+import com.techexpat.site.service.KbdUserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -32,19 +32,19 @@ class HomeControllerTest {
     PosthogProperties posthogProperties;
 
     @MockitoBean
-    KbrUserDetailsService kbrUserDetailsService;
+    KbdUserDetailsService kbdUserDetailsService;
 
     @MockitoBean
-    KbrAuthFailureHandler kbrAuthFailureHandler;
+    KbdAuthFailureHandler kbdAuthFailureHandler;
 
     @MockitoBean
-    KbrAuthSuccessHandler kbrAuthSuccessHandler;
+    KbdAuthSuccessHandler kbdAuthSuccessHandler;
 
     @MockitoBean
-    KbrUserService kbrUserService;
+    KbdUserService kbdUserService;
 
     @MockitoBean
-    KbrSubscriptionService kbrSubscriptionService;
+    KbdSubscriptionService kbdSubscriptionService;
 
     @Test
     void homePageReturnsOk() throws Exception {
@@ -58,14 +58,14 @@ class HomeControllerTest {
                .andExpect(view().name("index"));
     }
 
-    /** The footer's terms and privacy cover the receipt tool only, not the whole site. */
+    /** The footer's terms and privacy cover the doc tool only, not the whole site. */
     @Test
-    void homePageFooterOmitsTheKbrTermsAndPrivacyLinks() throws Exception {
+    void homePageFooterOmitsTheKbdTermsAndPrivacyLinks() throws Exception {
         mockMvc.perform(get("/"))
                .andExpect(content().string(
-                       not(containsString("/tool/keep-business-receipt/terms"))))
+                       not(containsString("/tool/keep-business-docs/terms"))))
                .andExpect(content().string(
-                       not(containsString("/tool/keep-business-receipt/privacy"))));
+                       not(containsString("/tool/keep-business-docs/privacy"))));
     }
 
 }

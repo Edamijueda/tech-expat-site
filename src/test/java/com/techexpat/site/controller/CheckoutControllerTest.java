@@ -1,15 +1,15 @@
 package com.techexpat.site.controller;
 
-import com.techexpat.site.config.KbrAuthFailureHandler;
-import com.techexpat.site.config.KbrAuthSuccessHandler;
+import com.techexpat.site.config.KbdAuthFailureHandler;
+import com.techexpat.site.config.KbdAuthSuccessHandler;
 import com.techexpat.site.config.PosthogProperties;
 import com.techexpat.site.config.WebSecurityConfig;
 import com.techexpat.site.model.Course;
 import com.techexpat.site.model.Order;
 import com.techexpat.site.service.CourseCatalog;
-import com.techexpat.site.service.KbrSubscriptionService;
-import com.techexpat.site.service.KbrUserDetailsService;
-import com.techexpat.site.service.KbrUserService;
+import com.techexpat.site.service.KbdSubscriptionService;
+import com.techexpat.site.service.KbdUserDetailsService;
+import com.techexpat.site.service.KbdUserService;
 import com.techexpat.site.service.NowPaymentsClient;
 import com.techexpat.site.service.NowPaymentsClient.InvoiceResponse;
 import com.techexpat.site.service.OrderService;
@@ -58,19 +58,19 @@ class CheckoutControllerTest {
     PosthogProperties posthogProperties;
 
     @MockitoBean
-    KbrUserDetailsService kbrUserDetailsService;
+    KbdUserDetailsService kbdUserDetailsService;
 
     @MockitoBean
-    KbrAuthFailureHandler kbrAuthFailureHandler;
+    KbdAuthFailureHandler kbdAuthFailureHandler;
 
     @MockitoBean
-    KbrAuthSuccessHandler kbrAuthSuccessHandler;
+    KbdAuthSuccessHandler kbdAuthSuccessHandler;
 
     @MockitoBean
-    KbrUserService kbrUserService;
+    KbdUserService kbdUserService;
 
     @MockitoBean
-    KbrSubscriptionService kbrSubscriptionService;
+    KbdSubscriptionService kbdSubscriptionService;
 
     private final Course course = new Course("practical-sql", "Practical SQL", new BigDecimal("29.00"));
 

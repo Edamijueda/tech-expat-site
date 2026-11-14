@@ -3,7 +3,7 @@ spring:
     name: TechExpat Site
   servlet:
     multipart:
-      max-file-size: 9MB # just above receipts.max-bytes so our own message handles the 8 MB case
+      max-file-size: 9MB # just above docs.max-bytes so our own message handles the 8 MB case
       max-request-size: 10MB
 
 info:
@@ -32,13 +32,13 @@ admin:
   username: ${ADMIN_USERNAME:}
   password: ${ADMIN_PASSWORD:}
 
-kbr:
-  remember-me-key: ${KBR_REMEMBER_ME_KEY:}
+kbd:
+  remember-me-key: ${KBD_REMEMBER_ME_KEY:}
 
-receipts:
+docs:
   supabase-url: ${SUPABASE_URL:}
   service-role-key: ${SUPABASE_SERVICE_ROLE_KEY:}
-  bucket: ${TE_KBR_STORAGE_BUCKET:}
+  bucket: ${TE_KBD_STORAGE_BUCKET:}
   max-bytes: 8388608 # 8 MB: a 12 MP phone photo often lands at 2-5 MB, so 5 MB was tight
 
 display:

@@ -13,8 +13,8 @@ public class ToolController {
         return "tool/index";
     }
 
-    @GetMapping("/keep-business-receipt")
-    public String keepBusinessReceipt() {
-        return "tool/keep-business-receipt/index";
+    @GetMapping("/keep-business-docs")
+    public String keepBusinessDocs() {
+        return "tool/keep-business-docs/index";
     }
 }

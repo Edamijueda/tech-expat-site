@@ -1,9 +1,9 @@
 package com.techexpat.site.config;
 
 import com.techexpat.site.controller.HomeController;
-import com.techexpat.site.service.KbrSubscriptionService;
-import com.techexpat.site.service.KbrUserDetailsService;
-import com.techexpat.site.service.KbrUserService;
+import com.techexpat.site.service.KbdSubscriptionService;
+import com.techexpat.site.service.KbdUserDetailsService;
+import com.techexpat.site.service.KbdUserService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,19 +27,19 @@ class WebSecurityConfigTest {
     PosthogProperties posthogProperties;
 
     @MockitoBean
-    KbrUserDetailsService kbrUserDetailsService;
+    KbdUserDetailsService kbdUserDetailsService;
 
     @MockitoBean
-    KbrAuthFailureHandler kbrAuthFailureHandler;
+    KbdAuthFailureHandler kbdAuthFailureHandler;
 
     @MockitoBean
-    KbrAuthSuccessHandler kbrAuthSuccessHandler;
+    KbdAuthSuccessHandler kbdAuthSuccessHandler;
 
     @MockitoBean
-    KbrUserService kbrUserService;
+    KbdUserService kbdUserService;
 
     @MockitoBean
-    KbrSubscriptionService kbrSubscriptionService;
+    KbdSubscriptionService kbdSubscriptionService;
 
     @Test
     void adminRouteWithoutCredentialsReturns401() throws Exception {

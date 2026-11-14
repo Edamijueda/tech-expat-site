@@ -21,7 +21,7 @@ class DisplayTimeTest {
         assertThat(utc.dateTime(instant)).isEqualTo("2026-10-20 08:30");
     }
 
-    /** The bug this class exists to prevent: a receipt kept just after midnight in Lagos. */
+    /** The bug this class exists to prevent: a document kept just after midnight in Lagos. */
     @Test
     void keepsLateNightUploadsOnTheRightDay() {
         Instant justAfterMidnightInLagos = Instant.parse("2026-10-19T23:30:00Z");
