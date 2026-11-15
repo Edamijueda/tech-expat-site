@@ -93,6 +93,19 @@ class KbdSetupControllerTest {
                 .andExpect(redirectedUrl(SETUP));
     }
 
+    /** Autocapture would read the document descriptions sitting in the list's tooltips. */
+    @Test
+    void theDashboardLoadsNoAnalyticsScript() throws Exception {
+        when(posthogProperties.key()).thenReturn("phc_test_key");
+        when(userService.hasBusinessName(EMAIL)).thenReturn(true);
+        when(subscriptions.statusFor(any()))
+                .thenReturn(new KbdAccessStatus(true, 4, 30, 27, null));
+
+        mockMvc.perform(get(DASHBOARD).with(kbdUser()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("posthog.init"))));
+    }
+
     @Test
     void dashboardShowsTheTrialCounter() throws Exception {
         when(userService.hasBusinessName(EMAIL)).thenReturn(true);

@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.mockito.Mockito.when;
 
 @WebMvcTest(HomeController.class)
 @Import(WebSecurityConfig.class)
@@ -56,6 +57,14 @@ class HomeControllerTest {
     void homePageRendersIndexTemplate() throws Exception {
         mockMvc.perform(get("/"))
                .andExpect(view().name("index"));
+    }
+
+    @Test
+    void homePageLoadsAnalytics() throws Exception {
+        when(posthogProperties.key()).thenReturn("phc_test_key");
+
+        mockMvc.perform(get("/"))
+               .andExpect(content().string(containsString("posthog.init")));
     }
 
     /** The footer's terms and privacy cover the doc tool only, not the whole site. */
