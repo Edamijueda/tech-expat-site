@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -103,7 +104,7 @@ class KbdBizDocControllerTest {
                         .param("description", "d").with(kbdUser()))
                 .andExpect(status().isForbidden());
 
-        verify(docService, never()).upload(anyString(), anyString(), any());
+        verify(docService, never()).upload(any(KbdUser.class), anyString(), any());
     }
 
     @Test
@@ -115,12 +116,13 @@ class KbdBizDocControllerTest {
                 .andExpect(redirectedUrl(BASE + "/dashboard"))
                 .andExpect(flash().attributeExists("infoMessage"));
 
-        verify(docService).upload(eq(USER_ID), eq("Fish supplier"), any());
+        verify(docService).upload(argThat(u -> USER_ID.equals(u.getId())),
+                eq("Fish supplier"), any());
     }
 
     @Test
     void uploadSurfacesValidationMessageAsFlash() throws Exception {
-        when(docService.upload(anyString(), anyString(), any()))
+        when(docService.upload(any(KbdUser.class), anyString(), any()))
                 .thenThrow(new BizDocValidationException("That file is larger than 5 MB."));
 
         mockMvc.perform(multipart(BASE + "/docs").file(jpeg())
@@ -219,7 +221,7 @@ class KbdBizDocControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl(BASE + "/dashboard"));
 
-        verify(docService, never()).upload(anyString(), anyString(), any());
+        verify(docService, never()).upload(any(KbdUser.class), anyString(), any());
     }
 
     @Test

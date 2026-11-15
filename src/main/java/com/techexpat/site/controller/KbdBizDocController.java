@@ -45,7 +45,7 @@ public class KbdBizDocController {
                          Authentication authentication,
                          RedirectAttributes redirectAttributes) {
         try {
-            docService.upload(currentUserId(authentication), description, file);
+            docService.upload(currentUser(authentication), description, file);
             redirectAttributes.addFlashAttribute("infoMessage", "Document kept.");
         } catch (BizDocValidationException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
@@ -98,8 +98,11 @@ public class KbdBizDocController {
     }
 
     private String currentUserId(Authentication authentication) {
+        return currentUser(authentication).getId();
+    }
+
+    private KbdUser currentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
-                .map(KbdUser::getId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
@@ -107,23 +110,13 @@ public class KbdBizDocController {
     private static String downloadName(BizDoc doc) {
         String original = doc.getOriginalFilename();
         if (original == null || original.isBlank()) {
-            return "document" + extensionFor(doc.getContentType());
+            return "document" + BizDocService.extensionFor(doc.getContentType());
         }
         String bare = original.replaceAll(".*[/\\\\]", "").replaceAll("[\\p{Cntrl}\"]", "").trim();
         if (bare.isEmpty()) {
-            return "document" + extensionFor(doc.getContentType());
+            return "document" + BizDocService.extensionFor(doc.getContentType());
         }
         return bare.length() > 100 ? bare.substring(0, 100) : bare;
-    }
-
-    private static String extensionFor(String contentType) {
-        return switch (contentType) {
-            case "image/jpeg" -> ".jpg";
-            case "image/png" -> ".png";
-            case "image/heic" -> ".heic";
-            case "application/pdf" -> ".pdf";
-            default -> "";
-        };
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
