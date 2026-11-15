@@ -29,6 +29,9 @@ public class BizDocService {
 
     static final String SLUG_FALLBACK = "business";
 
+    /** The width of te_kbd_docs.original_filename, which the device's name must fit. */
+    static final int MAX_ORIGINAL_FILENAME_LENGTH = 255;
+
     private final BizDocRepository docs;
     private final BizDocStorage storage;
     private final BizDocsProperties props;
@@ -92,7 +95,7 @@ public class BizDocService {
                 user.getId(),
                 trimmed,
                 storageKey,
-                file.getOriginalFilename(),
+                boundedFilename(file.getOriginalFilename()),
                 contentType,
                 content.length));
     }
@@ -101,6 +104,19 @@ public class BizDocService {
     public void delete(BizDoc doc) {
         docs.delete(doc);
         storage.delete(doc.getStorageKey());
+    }
+
+    /**
+     * The name comes off the user's device, so it is the one value here with no length of
+     * its own. Over the column's width the insert would fail after the file had already
+     * been stored, leaving a file in the bucket with no row pointing at it.
+     */
+    static String boundedFilename(String originalFilename) {
+        if (originalFilename == null
+                || originalFilename.length() <= MAX_ORIGINAL_FILENAME_LENGTH) {
+            return originalFilename;
+        }
+        return originalFilename.substring(0, MAX_ORIGINAL_FILENAME_LENGTH);
     }
 
     /**
