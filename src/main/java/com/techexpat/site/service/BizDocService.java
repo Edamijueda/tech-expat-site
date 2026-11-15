@@ -2,6 +2,7 @@ package com.techexpat.site.service;
 
 import com.techexpat.site.config.BizDocsProperties;
 import com.techexpat.site.model.BizDoc;
+import com.techexpat.site.model.KbdUser;
 import com.techexpat.site.repository.BizDocRepository;
 
 import org.springframework.stereotype.Service;
@@ -9,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,6 +20,14 @@ import java.util.UUID;
 public class BizDocService {
 
     static final int MAX_DESCRIPTION_LENGTH = 500;
+
+    /** Long enough to read, short enough to leave room in the 500-char storage_key. */
+    static final int MAX_SLUG_LENGTH = 60;
+
+    /** Business names are not unique, so the folder carries part of the user's id too. */
+    static final int ID_SUFFIX_LENGTH = 8;
+
+    static final String SLUG_FALLBACK = "business";
 
     private final BizDocRepository docs;
     private final BizDocStorage storage;
@@ -42,7 +53,7 @@ public class BizDocService {
     }
 
     @Transactional
-    public BizDoc upload(String userId, String description, MultipartFile file) {
+    public BizDoc upload(KbdUser user, String description, MultipartFile file) {
         String trimmed = description == null ? "" : description.trim();
         if (trimmed.isEmpty()) {
             throw new BizDocValidationException("Add a short description so you can find this later.");
@@ -73,12 +84,12 @@ public class BizDocService {
         }
 
         String docId = UUID.randomUUID().toString();
-        String storageKey = userId + "/" + docId;
+        String storageKey = storageFolder(user) + "/" + docId + extensionFor(contentType);
         storage.store(storageKey, contentType, content);
 
         return docs.save(new BizDoc(
                 docId,
-                userId,
+                user.getId(),
                 trimmed,
                 storageKey,
                 file.getOriginalFilename(),
@@ -90,6 +101,52 @@ public class BizDocService {
     public void delete(BizDoc doc) {
         docs.delete(doc);
         storage.delete(doc.getStorageKey());
+    }
+
+    /**
+     * The folder a user's files sit in: their business name, slugged, with the first few
+     * characters of their id appended. Two businesses may share a name, and the suffix is
+     * what keeps their folders apart.
+     */
+    static String storageFolder(KbdUser user) {
+        String id = user.getId();
+        return slug(user.getBusinessName())
+                + "-" + id.substring(0, Math.min(ID_SUFFIX_LENGTH, id.length()));
+    }
+
+    /**
+     * Storage keys go into a URI without escaping, so everything outside [a-z0-9-] has to
+     * go. A name with no ASCII form at all — written entirely in another script — slugs to
+     * an empty string, which is what the fallback is for.
+     */
+    static String slug(String businessName) {
+        if (businessName == null) {
+            return SLUG_FALLBACK;
+        }
+        String unaccented = Normalizer.normalize(businessName, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}+", "");
+        String slug = unaccented.toLowerCase(Locale.ROOT)
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("^-+|-+$", "");
+        if (slug.length() > MAX_SLUG_LENGTH) {
+            slug = slug.substring(0, MAX_SLUG_LENGTH).replaceAll("-+$", "");
+        }
+        return slug.isEmpty() ? SLUG_FALLBACK : slug;
+    }
+
+    /**
+     * The extension a stored file is given, from the type sniffed out of its own bytes.
+     * Unknown types can't reach the upload path, but a stored row's type still comes
+     * through here when it is served back.
+     */
+    public static String extensionFor(String contentType) {
+        return switch (contentType) {
+            case "image/jpeg" -> ".jpg";
+            case "image/png" -> ".png";
+            case "image/heic" -> ".heic";
+            case "application/pdf" -> ".pdf";
+            default -> "";
+        };
     }
 
     /**

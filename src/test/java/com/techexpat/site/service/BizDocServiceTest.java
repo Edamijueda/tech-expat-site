@@ -2,6 +2,7 @@ package com.techexpat.site.service;
 
 import com.techexpat.site.config.BizDocsProperties;
 import com.techexpat.site.model.BizDoc;
+import com.techexpat.site.model.KbdUser;
 import com.techexpat.site.repository.BizDocRepository;
 import com.techexpat.site.service.BizDocService.BizDocValidationException;
 
@@ -57,12 +58,13 @@ class BizDocServiceTest {
     }
 
     @Test
-    void uploadStoresUnderUserScopedKeyAndSavesRow() {
-        BizDoc saved = service.upload("user-1", "  Fish supplier  ", file("r.jpg", JPEG));
+    void uploadStoresUnderABusinessNamedKeyAndSavesRow() {
+        BizDoc saved = service.upload(user("Fish Market Ltd"), "  Fish supplier  ", file("r.jpg", JPEG));
 
         assertThat(saved.getUserId()).isEqualTo("user-1");
         assertThat(saved.getDescription()).isEqualTo("Fish supplier");
-        assertThat(saved.getStorageKey()).startsWith("user-1/");
+        assertThat(saved.getStorageKey()).startsWith("fish-market-ltd-user-1/");
+        assertThat(saved.getStorageKey()).endsWith(".jpg");
         assertThat(saved.getContentType()).isEqualTo("image/jpeg");
         assertThat(saved.getSizeBytes()).isEqualTo(JPEG.length);
         verify(storage).store(saved.getStorageKey(), "image/jpeg", JPEG);
@@ -70,7 +72,7 @@ class BizDocServiceTest {
 
     @Test
     void uploadRejectsAnExecutableRenamedAsAnImage() {
-        assertThatThrownBy(() -> service.upload("user-1", "sneaky",
+        assertThatThrownBy(() -> service.upload(user("Fish Market Ltd"), "sneaky",
                 file("totally.jpg", "MZ\u0090binary".getBytes(StandardCharsets.ISO_8859_1))))
                 .isInstanceOf(BizDocValidationException.class)
                 .hasMessageContaining("photo");
@@ -81,21 +83,21 @@ class BizDocServiceTest {
 
     @Test
     void uploadRejectsBlankDescription() {
-        assertThatThrownBy(() -> service.upload("user-1", "   ", file("r.jpg", JPEG)))
+        assertThatThrownBy(() -> service.upload(user("Fish Market Ltd"), "   ", file("r.jpg", JPEG)))
                 .isInstanceOf(BizDocValidationException.class);
         verify(storage, never()).store(anyString(), anyString(), any());
     }
 
     @Test
     void uploadRejectsOverlongDescription() {
-        assertThatThrownBy(() -> service.upload("user-1", "x".repeat(501), file("r.jpg", JPEG)))
+        assertThatThrownBy(() -> service.upload(user("Fish Market Ltd"), "x".repeat(501), file("r.jpg", JPEG)))
                 .isInstanceOf(BizDocValidationException.class);
         verify(storage, never()).store(anyString(), anyString(), any());
     }
 
     @Test
     void uploadRejectsEmptyFile() {
-        assertThatThrownBy(() -> service.upload("user-1", "desc", file("r.jpg", new byte[0])))
+        assertThatThrownBy(() -> service.upload(user("Fish Market Ltd"), "desc", file("r.jpg", new byte[0])))
                 .isInstanceOf(BizDocValidationException.class);
         verify(storage, never()).store(anyString(), anyString(), any());
     }
@@ -105,7 +107,7 @@ class BizDocServiceTest {
         BizDocService tiny = new BizDocService(docs, storage,
                 new BizDocsProperties("https://x.supabase.co", "key", "bucket", 2 * 1024 * 1024));
 
-        assertThatThrownBy(() -> tiny.upload("user-1", "desc", file("big.jpg", new byte[3 * 1024 * 1024])))
+        assertThatThrownBy(() -> tiny.upload(user("Fish Market Ltd"), "desc", file("big.jpg", new byte[3 * 1024 * 1024])))
                 .isInstanceOf(BizDocValidationException.class)
                 .hasMessageContaining("2 MB");
 
@@ -121,6 +123,65 @@ class BizDocServiceTest {
 
         verify(docs).delete(doc);
         verify(storage).delete("user-1/r-1");
+    }
+
+    @Test
+    void slugLowercasesStripsAccentsAndPunctuation() {
+        assertThat(BizDocService.slug("Café Olú & Sons, Ltd.")).isEqualTo("cafe-olu-sons-ltd");
+        assertThat(BizDocService.slug("  spaced   out  ")).isEqualTo("spaced-out");
+        assertThat(BizDocService.slug("A/B Trading")).isEqualTo("a-b-trading");
+    }
+
+    /** A name with no ASCII form at all would otherwise slug to an empty folder. */
+    @Test
+    void slugFallsBackWhenNothingSurvives() {
+        assertThat(BizDocService.slug("的店铺")).isEqualTo("business");
+        assertThat(BizDocService.slug("!!!")).isEqualTo("business");
+        assertThat(BizDocService.slug(null)).isEqualTo("business");
+    }
+
+    @Test
+    void slugIsTruncatedWithoutATrailingHyphen() {
+        String slug = BizDocService.slug("a".repeat(40) + " " + "b".repeat(40));
+        assertThat(slug).hasSize(60).doesNotEndWith("-");
+    }
+
+    /** Business names aren't unique, so the id suffix is what keeps folders apart. */
+    @Test
+    void sameBusinessNameStillGetsSeparateFolders() {
+        KbdUser one = new KbdUser("11111111-aaaa", "a@b.com", "hash");
+        one.setBusinessName("Pethona");
+        KbdUser two = new KbdUser("22222222-bbbb", "c@d.com", "hash");
+        two.setBusinessName("Pethona");
+
+        assertThat(BizDocService.storageFolder(one)).isEqualTo("pethona-11111111");
+        assertThat(BizDocService.storageFolder(two)).isEqualTo("pethona-22222222");
+    }
+
+    @Test
+    void extensionComesFromTheSniffedType() {
+        assertThat(BizDocService.extensionFor("image/jpeg")).isEqualTo(".jpg");
+        assertThat(BizDocService.extensionFor("image/png")).isEqualTo(".png");
+        assertThat(BizDocService.extensionFor("image/heic")).isEqualTo(".heic");
+        assertThat(BizDocService.extensionFor("application/pdf")).isEqualTo(".pdf");
+        assertThat(BizDocService.extensionFor("application/octet-stream")).isEmpty();
+    }
+
+    /** Older rows were stored with no extension, and must still be readable. */
+    @Test
+    void contentIsFetchedByTheRowsOwnStoredKey() {
+        BizDoc old = new BizDoc("doc-1", "user-1", "desc", "user-1/doc-1",
+                "r.jpg", "image/jpeg", JPEG.length);
+        when(storage.retrieve("user-1/doc-1")).thenReturn(JPEG);
+
+        assertThat(service.contentOf(old)).isEqualTo(JPEG);
+        verify(storage).retrieve("user-1/doc-1");
+    }
+
+    private static KbdUser user(String businessName) {
+        KbdUser user = new KbdUser("user-1", "a@b.com", "hash");
+        user.setBusinessName(businessName);
+        return user;
     }
 
     private static MockMultipartFile file(String name, byte[] content) {
