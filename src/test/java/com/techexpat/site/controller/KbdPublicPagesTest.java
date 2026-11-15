@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.mockito.Mockito.when;
 
 @WebMvcTest(KbdAuthController.class)
 @Import(WebSecurityConfig.class)
@@ -95,6 +96,17 @@ class KbdPublicPagesTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString(BASE + "/terms")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString(BASE + "/privacy")));
+    }
+
+    /** The public funnel is where analytics earns its place. */
+    @Test
+    void publicToolPagesStillLoadAnalytics() throws Exception {
+        when(posthogProperties.key()).thenReturn("phc_test_key");
+
+        mockMvc.perform(get(BASE + "/sign-in"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(
+                        org.hamcrest.Matchers.containsString("posthog.init")));
     }
 
     @Test

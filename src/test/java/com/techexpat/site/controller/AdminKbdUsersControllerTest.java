@@ -88,6 +88,19 @@ class AdminKbdUsersControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    /** The list prints customer email addresses, which autocapture has no business reading. */
+    @Test
+    void theAdminListLoadsNoAnalyticsScript() throws Exception {
+        when(posthogProperties.key()).thenReturn("phc_test_key");
+        when(userService.findAllNewestFirst()).thenReturn(List.of());
+
+        mockMvc.perform(get("/admin/users").with(httpBasic("admin", "admin")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(
+                        org.hamcrest.Matchers.not(
+                                org.hamcrest.Matchers.containsString("posthog.init"))));
+    }
+
     @Test
     void listRendersUsersModel() throws Exception {
         KbdUser user = sampleUser("u-1", "a@b.com", KbdUserStatus.PENDING);
