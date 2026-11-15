@@ -125,6 +125,35 @@ class BizDocServiceTest {
         verify(storage).delete("user-1/r-1");
     }
 
+    /**
+     * The column is varchar(255), and the file is already in storage by the time the row
+     * is inserted, so an over-long name would strand it there.
+     */
+    @Test
+    void uploadTruncatesAnOverlongDeviceFilename() {
+        String longName = "n".repeat(300) + ".jpg";
+
+        BizDoc saved = service.upload(user("Fish Market Ltd"), "desc", file(longName, JPEG));
+
+        assertThat(saved.getOriginalFilename()).hasSize(255);
+        assertThat(saved.getOriginalFilename()).isEqualTo("n".repeat(255));
+    }
+
+    @Test
+    void uploadLeavesAnOrdinaryFilenameAlone() {
+        BizDoc saved = service.upload(user("Fish Market Ltd"), "desc", file("IMG_4821.jpg", JPEG));
+
+        assertThat(saved.getOriginalFilename()).isEqualTo("IMG_4821.jpg");
+    }
+
+    @Test
+    void boundedFilenameHandlesNullAndTheExactWidth() {
+        assertThat(BizDocService.boundedFilename(null)).isNull();
+        assertThat(BizDocService.boundedFilename("")).isEmpty();
+        assertThat(BizDocService.boundedFilename("x".repeat(255))).hasSize(255);
+        assertThat(BizDocService.boundedFilename("x".repeat(256))).hasSize(255);
+    }
+
     @Test
     void slugLowercasesStripsAccentsAndPunctuation() {
         assertThat(BizDocService.slug("Café Olú & Sons, Ltd.")).isEqualTo("cafe-olu-sons-ltd");
